@@ -45,12 +45,26 @@ Role.hasMany(User)
 User.belongsTo(Role)
 
 User.hasMany(Ride);
-Ride.belongsTo(User);
+Ride.belongsTo(User, {
+    foreignKey: {
+        name:'id_client',
+    }
+});
+
+Ride.belongsTo(User, {
+    foreignKey: {
+        name:'id_driver',
+    }
+});
 
 Ride.hasOne(Rating, {
-    onDelete:'CASCADE'
+    onDelete:'CASCADE',
 });
-Rating.belongsTo(Ride);
+Rating.belongsTo(Ride, {
+    foreignKey: {
+        name:'id_ride'
+    }
+});
 
 
 let UserRoute = require('./src/backend/routes/user.route')

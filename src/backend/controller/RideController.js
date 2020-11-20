@@ -2,7 +2,8 @@ const express = require('express')
 const ride = express.Router();
 const _ = require('lodash');
 const Ride = require("../model/Ride");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const Rating = require('../model/Rating');
 
 //Add ride
 exports.add = (req, res) => {
@@ -42,15 +43,37 @@ exports.delete = (req, res) => {
         }
         Ride.destroy({
             where: {
-                id_ride:id
+                id_ride: id
             }
         })
-        .then(result => {
-            res.send("Course supprimé avec succès");
-        })
-        .catch(err => {
-            console.log(err);
-            res.send("Erreur lors de la suppression");
+            .then(result => {
+                res.send("Course supprimé avec succès");
+            })
+            .catch(err => {
+                console.log(err);
+                res.send("Erreur lors de la suppression");
+            })
+    })
+}
+
+exports.get = (req, res) => {
+    let id = req.params.id;
+    jwt.verify(req.headers['authorization'], process.env.SECRET_KEY, function (err, decoded) {
+        if (err) {
+            console.log(err)
+            res.send("Vous n'etes pas connecté");
+            return;
+        }
+        Ride.findOne({
+            where: {
+                id_ride: id
+            },
+            include: [Rating]
+        }).then(ride => {
+            if (ride) res.send(ride)
+            else res.json({ message: "Cette course est introuvable" })
+        }).catch(err => {
+            res.json({ message: err })
         })
     })
 }

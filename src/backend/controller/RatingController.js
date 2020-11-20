@@ -5,7 +5,7 @@ const Rating = require("../model/Rating");
 const jwt = require("jsonwebtoken")
 
 exports.add = (req, res) => {
-        // Test if token exist
+    // Test if token exist
     // TODO Define global json response
     jwt.verify(req.headers['authorization'], process.env.SECRET_KEY, function (err, decoded) {
         if (err) {
