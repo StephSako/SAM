@@ -20,7 +20,7 @@ module.exports = db.sequelize.define(
             type: Sequelize.STRING,
             allowNull: false
         },
-        id_ride: {
+        ride_id_ride: {
             type: Sequelize.INTEGER,
             allowNull: false,
             references: {

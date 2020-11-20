@@ -4,6 +4,7 @@ const _ = require('lodash');
 const Ride = require("../model/Ride");
 const jwt = require("jsonwebtoken");
 const Rating = require('../model/Rating');
+const User = require('../model/User');
 
 //Add ride
 exports.add = (req, res) => {
@@ -68,7 +69,7 @@ exports.get = (req, res) => {
             where: {
                 id_ride: id
             },
-            include: [Rating]
+            include: {all:true}
         }).then(ride => {
             if (ride) res.send(ride)
             else res.json({ message: "Cette course est introuvable" })

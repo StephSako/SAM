@@ -15,7 +15,8 @@ module.exports = db.sequelize.define(
             allowNull: false,
             references: {
                 model: User,
-                key: 'id_user'
+                key: 'id_user',
+                as: 'client'
             }
         },
         id_driver: {
@@ -24,7 +25,8 @@ module.exports = db.sequelize.define(
             references: {
                 model: User,
                 key: 'id_user'
-            }
+            },
+            as: 'driver'
         },
         address: {
             type: Sequelize.STRING,

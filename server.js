@@ -44,27 +44,24 @@ app.get('/api', function (req, res) {
 Role.hasMany(User)
 User.belongsTo(Role)
 
-User.hasMany(Ride);
+User.hasMany(Ride, { foreignKey: 'id_client'});
+User.hasMany(Ride, { foreignKey: 'id_driver'});
 Ride.belongsTo(User, {
     foreignKey: {
-        name:'id_client',
-    }
+        name:'id_client'
+    },
+    as: 'client'
 });
 
 Ride.belongsTo(User, {
     foreignKey: {
-        name:'id_driver',
-    }
+        name:'id_driver'
+    },
+    as: 'driver'
 });
 
-Ride.hasOne(Rating, {
-    onDelete:'CASCADE',
-});
-Rating.belongsTo(Ride, {
-    foreignKey: {
-        name:'id_ride'
-    }
-});
+Ride.hasOne(Rating);
+Rating.belongsTo(Ride);
 
 
 let UserRoute = require('./src/backend/routes/user.route')
