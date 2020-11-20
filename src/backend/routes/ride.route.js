@@ -9,7 +9,10 @@ router.post("/add", ride.add)
 router.get("/delete/:id", ride.delete)
 
 //Get one ride
-router.get("/get/:id", ride.get);
+router.get("/get/:id", ride.get)
+
+//Get all ride
+router.get("/get", ride.getAll)
 
 module.exports = router;
 

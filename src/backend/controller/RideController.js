@@ -78,3 +78,21 @@ exports.get = (req, res) => {
         })
     })
 }
+
+exports.getAll = (req, res) => {
+    jwt.verify(req.headers['authorization'], process.env.SECRET_KEY, function (err, decoded) {
+        if (err) {
+            console.log(err)
+            res.send("Vous n'etes pas connecté");
+            return;
+        }
+        Ride.findOne({
+            include: {all:true}
+        }).then(ride => {
+            if (ride) res.send(ride)
+            else res.json({ message: "Cette course est introuvable" })
+        }).catch(err => {
+            res.json({ message: err })
+        })
+    })
+}
