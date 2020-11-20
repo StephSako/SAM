@@ -1,6 +1,6 @@
-var express  = require("express");
+const express  = require("express");
 const ride = require("../controller/RideController");
-var router = express.Router();
+const router = express.Router();
 
 //Add a ride
 router.post("/add", ride.add)
@@ -11,8 +11,11 @@ router.get("/delete/:id", ride.delete)
 //Get one ride
 router.get("/get/:id", ride.get)
 
-//Get all ride
-router.get("/get", ride.getAll)
+//Get all specific driver's ratings
+router.get("/get/all_driver_ratings/:id_driver", ride.getAllDriverRatings);
+
+//Get specific driver's average ratings
+router.get("/get/average_driver_ratings/:id_driver", ride.getAverageDriverRatings);
 
 module.exports = router;
 

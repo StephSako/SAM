@@ -63,7 +63,6 @@ Ride.belongsTo(User, {
 Ride.hasOne(Rating);
 Rating.belongsTo(Ride);
 
-
 let UserRoute = require('./src/backend/routes/user.route')
 app.use('/api/user', UserRoute)
 

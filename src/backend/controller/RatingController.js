@@ -15,7 +15,7 @@ exports.add = (req, res) => {
         }
 
         const ratingData = {
-            id_ride: req.body.id_ride,
+            ride_id_ride: req.body.id_ride,
             note: req.body.note,
             comment: req.body.comment
         }
@@ -23,7 +23,7 @@ exports.add = (req, res) => {
         console.log(ratingData)
     
         Rating.create(ratingData).then(rating => {
-            res.send("Note ajouté");
+            res.send("Note ajoutée");
         }).catch(err => {
             console.log(err);
             res.send("Erreur lors de l'ajout de la note");
