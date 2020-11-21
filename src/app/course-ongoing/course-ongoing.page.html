@@ -1,0 +1,9 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>course-ongoing</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-map *ngIf="(coordinates|async) as coords" [coords]="coords"></app-map>
+</ion-content>

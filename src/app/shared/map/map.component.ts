@@ -1,10 +1,13 @@
 import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
 
+declare var google;
+
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
 })
+
 export class MapComponent implements AfterViewInit {
 
   @Input() coords: {

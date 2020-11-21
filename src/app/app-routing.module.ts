@@ -8,6 +8,10 @@ const routes: Routes = [
   },  {
     path: 'account',
     loadChildren: () => import('./account/account.module').then( m => m.AccountPageModule)
+  },
+  {
+    path: 'course-ongoing',
+    loadChildren: () => import('./course-ongoing/course-ongoing.module').then( m => m.CourseOngoingPageModule)
   }
 
 ];
