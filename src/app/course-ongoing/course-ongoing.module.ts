@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { CourseOngoingPageRoutingModule } from './course-ongoing-routing.module';
 
 import { CourseOngoingPage } from './course-ongoing.page';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    CourseOngoingPageRoutingModule
+    CourseOngoingPageRoutingModule,
+    SharedModule
   ],
   declarations: [CourseOngoingPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
