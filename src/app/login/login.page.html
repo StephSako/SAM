@@ -7,18 +7,20 @@
     </div>
 
     <form [formGroup]="login" (ngSubmit)="onLogin()">
+      <mat-error *ngIf="this.login.controls.email.invalid && this.login.controls.email.touched">
+        {{  getErrorMessageLogin() }}
+      </mat-error>
       <ion-item color="light" expand="block" shape="round" fill="outline">
         <ion-input [(ngModel)]="credentials.login_user" color="dark" type="text" name="email" placeholder="Adresse email" formControlName="email"></ion-input>
-        <mat-error *ngIf="this.login.controls.email.invalid">
-          {{  getErrorMessageLogin() }}
-        </mat-error>
+
       </ion-item >
       <br>
+      <mat-error *ngIf="this.login.controls.password.invalid && this.login.controls.password.touched">
+        {{  getErrorMessagePassword() }}
+      </mat-error>
       <ion-item color="light" expand="block" shape="round" fill="outline">
         <ion-input  [(ngModel)]="credentials.password_user" color="dark" type="password" placeholder="Mot de passe" name="password" formControlName="password"></ion-input >
-          <mat-error *ngIf="this.login.controls.password.invalid">
-            {{  getErrorMessagePassword() }}
-          </mat-error>
+
         </ion-item >
         <br>
       <ion-button color="tertiary" expand="block" shape="round" type="submit" [disabled]="!login.valid">Connexion</ion-button >

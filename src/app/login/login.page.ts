@@ -34,13 +34,13 @@ export class LoginPage implements OnInit {
   }
 
   getErrorMessageLogin(): string {
-    if(this.login.hasError('required')) {
+    if(this.login.controls.email.hasError('required')) {
       return 'Le champ mail est requis';
     }
   }
 
   getErrorMessagePassword(): string {
-    if(this.login.hasError('required')) {
+    if(this.login.controls.password.hasError('required')) {
       return 'Le champ mot de passe est requis';
     }
   }
