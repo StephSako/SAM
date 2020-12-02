@@ -1,3 +1,12 @@
 ion-content {
     --ion-background-color: linear-gradient(#4adce6, #a1e9ef) fixed;
   }
+
+mat-form-field {
+  width: 100%;
+}
+
+ion-item {
+  border-radius: 20px;
+  margin: 5px;
+}
