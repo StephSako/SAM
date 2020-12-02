@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { TokenPayloadRegister, TokenResponse, UserInterface } from '../interfaces/UserInterface';
 
 @Injectable({
@@ -21,9 +22,6 @@ export class AuthService {
           this.saveToken(data.token);
         }
         return data;
-      }),
-      catchError(err => {
-        return throwError(err.error);
       })
     );
   }
