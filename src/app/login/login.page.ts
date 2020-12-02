@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { TokenPayloadLogin } from '../Interfaces/UserInterface';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -7,9 +10,48 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LoginPage implements OnInit {
 
-  constructor() { }
+  login: FormGroup;
+  spinnerShown: boolean;
+  credentials: TokenPayloadLogin = {
+    login_user: null,
+    password_user: null,
+  };
 
-  ngOnInit() {
+  constructor(private formBuilder: FormBuilder, private authService: AuthService) {
+    this.login = this.formBuilder.group({
+      email: ['', [Validators.required, this.noWhitespaceValidator]],
+      password: ['', [Validators.required, this.noWhitespaceValidator]],
+    })
   }
 
+  onLogin() {
+    this.spinnerShown = true;
+    console.log(this.login.value);
+    this.authService.login(this.credentials)
+    .subscribe((data: any) => {
+      console.log(data);
+    })
+  }
+
+  getErrorMessageLogin(): string {
+    if(this.login.hasError('required')) {
+      return 'Le champ mail est requis';
+    }
+  }
+
+  getErrorMessagePassword(): string {
+    if(this.login.hasError('required')) {
+      return 'Le champ mot de passe est requis';
+    }
+  }
+
+  ngOnInit() {
+    
+  }
+
+  noWhitespaceValidator(control: FormControl) {
+    const isWhitespace = (control.value || '').trim().length === 0;
+    const isValid = !isWhitespace;
+    return isValid ? null : { 'whitespace': true };
+  }
 }

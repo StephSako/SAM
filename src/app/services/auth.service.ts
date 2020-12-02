@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { TokenPayloadRegister, TokenResponse, UserInterface } from '../interfaces/UserInterface';
+import { TokenPayloadLogin, TokenPayloadRegister, TokenResponse, UserInterface } from '../interfaces/UserInterface';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +16,19 @@ export class AuthService {
 
   public register(user: TokenPayloadRegister): Observable<any> {
     const URL = this.http.post(this.baseURL + 'register', user);
+    return URL.pipe(
+      map((data: TokenResponse) => {
+        if (data.token) {
+          this.saveToken(data.token);
+        }
+        return data;
+      })
+    );
+  }
+
+  public login(user: TokenPayloadLogin): Observable<any> {
+    const URL = this.http.post(this.baseURL + 'login', user);
+
     return URL.pipe(
       map((data: TokenResponse) => {
         if (data.token) {

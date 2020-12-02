@@ -22,20 +22,44 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 var corsParam = {
-    credentials: true,
-    origin: "http://localhost:4200"
+    origin: "http://localhost:4000"
 };
+
+const allowedOrigins = [
+    'capacitor://localhost',
+    'ionic://localhost',
+    'http://localhost',
+    'http://localhost:8080',
+    'http://localhost:8100',
+    'http://localhost:4000'
+  ];
+
+  const corsOptions = {
+    origin: (origin, callback) => {
+      if (allowedOrigins.includes(origin) || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error('Origin not allowed by CORS'));
+      }
+    }
+  }
+
+  app.options('*', cors(corsOptions));
+
+app.get('/', cors(corsOptions), (req, res, next) => {
+  res.json({ message: 'This route is CORS-enabled for an allowed origin.' });
+})
 
 app.use(cors(corsParam))
 
 app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", '*');
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Credentials", 'true');
     next();
 })
 
 const path = require('path')
-app.use(express.static(path.join(__dirname, 'dist/')))
 
 app.get('/api', function (req, res) {
     res.json({ status: 'Working' })

@@ -16,13 +16,14 @@ process.env.SECRET_KEY = 'secret'
 
 // REGISTER
 exports.register = (req, res) => {
+    console.log(req.body);
     const userData = {
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        password: req.body.password,
-        phone_number: req.body.phone_number,
+        firstname: req.body.firstname_user,
+        lastname: req.body.lastname_user,
+        password: req.body.password_user,
+        phone_number: req.body.phone_number_user,
         role_user_id: req.body.role_user_id,
-        email: req.body.email
+        email: req.body.email_user
     }
     userData.password = bcrypt.hashSync(userData.password, 12)
     User.create(userData).then(user => {
@@ -37,6 +38,7 @@ exports.register = (req, res) => {
 
 // LOGIN
 exports.login = (req, res) => {
+    console.log(req.body);
     User.findOne({
         where: {
             [Op.or]: [
@@ -46,13 +48,18 @@ exports.login = (req, res) => {
         },
         include: [Role]
     }).then(user => {
-        if (bcrypt.compareSync(req.body.password, user.password)) {
+        if (bcrypt.compareSync(req.body.password_user, user.password)) {
+            console.log("OKK");
             let token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
                 expiresIn: 1440
             })
             res.json({token: token})
-        } else res.status(401).send("Le mot de passe est incorrect")
+        } else {
+            console.log("OKK2");
+            res.status(401).send("Le mot de passe est incorrect")
+        }
     }).catch(err => {
+        console.log(err);
         res.send(err)
         //res.status(500).send("Aucun compte associé à cet idenfitiant")
     })
