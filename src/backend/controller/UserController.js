@@ -48,20 +48,38 @@ exports.login = (req, res) => {
         },
         include: [Role]
     }).then(user => {
-        if (bcrypt.compareSync(req.body.password_user, user.password)) {
-            console.log("OKK");
-            let token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
-                expiresIn: 1440
-            })
-            res.json({token: token})
+        if(user) {
+            if (bcrypt.compareSync(req.body.password_user, user.password)) {
+                let token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
+                    expiresIn: 1440
+                })
+                res.json({
+                    success: true,
+                    token: token
+                })
+            } else {
+                res.send({
+                    success: false,
+                    title: "Connexion",
+                    message: "Mot de passe incorrect"
+                })
+            }
         } else {
-            console.log("OKK2");
-            res.status(401).send("Le mot de passe est incorrect")
+            res.send({
+                success: false,
+                title: "Connexion",
+                message: "Identifiants incorrect"
+            })
         }
+
     }).catch(err => {
         console.log(err);
-        res.send(err)
-        //res.status(500).send("Aucun compte associé à cet idenfitiant")
+        res.status(500).send({
+            success: false,
+            title: "Connexion",
+            message: "Erreur de connexion au serveur",
+            messageFull: err.message
+        })
     })
 }
 

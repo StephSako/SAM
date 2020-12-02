@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpClientModule } from '@angular/common/http';
+import {MatSnackBarModule} from '@angular/material/snack-bar'; 
 
 @NgModule({
   imports: [
@@ -28,6 +29,7 @@ import { HttpClientModule } from '@angular/common/http';
     MatInputModule,
     MatProgressSpinnerModule,
     HttpClientModule,
+    MatSnackBarModule
   ],
   declarations: [LoginPage]
 })

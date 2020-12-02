@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { TokenPayloadLogin } from '../Interfaces/UserInterface';
 import { AuthService } from '../services/auth.service';
+
 
 @Component({
   selector: 'app-login',
@@ -17,7 +19,7 @@ export class LoginPage implements OnInit {
     password_user: null,
   };
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService) {
+  constructor(private formBuilder: FormBuilder, private authService: AuthService, private snackBar: MatSnackBar) {
     this.login = this.formBuilder.group({
       email: ['', [Validators.required, this.noWhitespaceValidator]],
       password: ['', [Validators.required, this.noWhitespaceValidator]],
@@ -30,6 +32,11 @@ export class LoginPage implements OnInit {
     this.authService.login(this.credentials)
     .subscribe((data: any) => {
       console.log(data);
+      if(data.success) {
+        let snackBarRef = this.snackBar.open('Connexion réussi');
+      } else {
+        let snackBarRef = this.snackBar.open(data.message);
+      }
     })
   }
 
