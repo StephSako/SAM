@@ -60,4 +60,8 @@ export class AuthService {
     if (!this.token) { this.token = localStorage.getItem('userToken'); }
     return this.token;
   }
+
+  public editUser(user: UserInterface) {
+    return this.http.put(this.baseURL + "edit/" + user.id_user, user);
+  }
 }

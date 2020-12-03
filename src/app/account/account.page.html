@@ -1,49 +1,41 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>account</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
-  <ion-grid>
-    <ion-row style="padding-top:5%;">
+  
+   
       <ion-title style="text-align: center;font-weight:bold;size:large;font-size:2em;">
         Mon Compte
       </ion-title>
-    </ion-row>
-    <ion-row class="ion-align-items-center" style="padding-top:8%;">
-      <ion-col size="2"></ion-col>
-      <ion-col size="8" class="ion-text-center">
+ 
         <ion-img src="https://i.imgur.com/EMx6uVW.png" style="height:100px;"></ion-img>
         <ion-button block color="light">Choisir la photo</ion-button>
         <form (ngSubmit)="validate()" [formGroup]="formGroup">
-          <ion-item>
-            <ion-label position="floating" style="color:rgba(0, 0, 0, 0.685);">Prénom</ion-label>
-            <ion-input type="text" formControlName="firstNameForm"></ion-input>
+          <mat-error *ngIf="this.formGroup.controls.firstNameForm.invalid && formGroup.controls.firstNameForm.touched">
+            {{  getErrorMessageFirstname() }}
+          </mat-error>
+          <ion-item color="light" expand="block" shape="round" fill="outline">
+            <ion-input [(ngModel)]="user.firstname" type="text" formControlName="firstNameForm" placeholder="Prénom"></ion-input>
           </ion-item>
-          <ion-item>
-            <ion-label position="floating" style="color:rgba(0, 0, 0, 0.685);">Nom de famille</ion-label>
-            <ion-input type="text" formControlName="lastNameForm"></ion-input>
+          <br>
+          <mat-error *ngIf="this.formGroup.controls.lastNameForm.invalid && formGroup.controls.lastNameForm.touched">
+            {{  getErrorMessageLastname() }}
+          </mat-error>
+          <ion-item color="light" expand="block" shape="round" fill="outline">
+            <ion-input [(ngModel)]="user.lastname" type="text" formControlName="lastNameForm" placeholder="Nom"></ion-input>
           </ion-item>
-          <ion-item>
-            <ion-label position="floating" style="color:rgba(0, 0, 0, 0.685);">Email</ion-label>
-            <ion-input type="text" formControlName="emailForm"></ion-input>
+          <br>
+          <mat-error *ngIf="this.formGroup.controls.emailForm.invalid && formGroup.controls.emailForm.touched">
+            {{  getErrorMessageEmail() }}
+          </mat-error>
+          <ion-item color="light" expand="block" shape="round" fill="outline">
+            <ion-input [(ngModel)]="user.email" type="text" formControlName="emailForm" placeholder="Email"></ion-input>
           </ion-item>
-          <ion-item>
-            <ion-label position="floating" style="color:rgba(0, 0, 0, 0.685);">Mot de passe</ion-label>
-            <ion-input type="password" formControlName="passwordForm"></ion-input>
+          <br>
+          <mat-error *ngIf="this.formGroup.controls.phoneNumberForm.invalid && formGroup.controls.phoneNumberForm.touched">
+            {{  getErrorMessagePhone() }}
+          </mat-error>
+          <ion-item color="light" expand="block" shape="round" fill="outline">
+            <ion-input [(ngModel)]="user.phone_number" type="text" formControlName="phoneNumberForm" placeholder="Téléphone"></ion-input>
           </ion-item>
-          <ion-item>
-            <ion-label position="floating" style="color:rgba(0, 0, 0, 0.685);">Mot de passe (encore)</ion-label>
-            <ion-input type="password" formControlName="passwordAgainForm"></ion-input>
-          </ion-item>
-          <ion-button type="submit" block color="primary" [disabled]="formGroup.invalid 
-          || formGroup.controls.passwordForm.value != formGroup.controls.passwordAgainForm.value">Confirmer</ion-button>
+          <br>
+          <ion-button color="tertiary" expand="block" shape="round" type="submit"  [disabled]="formGroup.invalid">Confirmer</ion-button>
         </form>
-      </ion-col>
-      <ion-col size="2"></ion-col>
-    </ion-row>
-  </ion-grid>
 </ion-content>
-
-<!--style="background-color:aqua;"-->
