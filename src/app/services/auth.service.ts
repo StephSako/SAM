@@ -62,6 +62,15 @@ export class AuthService {
   }
 
   public editUser(user: UserInterface) {
-    return this.http.put(this.baseURL + "edit/" + user.id_user, user);
+    const URL = this.http.put(this.baseURL + 'edit/' + user.id_user, user);
+
+    return URL.pipe(
+      map((data: TokenResponse) => {
+        if (data.token) {
+          this.saveToken(data.token);
+        }
+        return data;
+      })
+    );
   }
 }
