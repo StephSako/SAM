@@ -5,9 +5,18 @@
 </ion-header>
 
 <ion-content>
-  <div>
-    <p>Bonjour</p>
-    <ion-fab-button></ion-fab-button>
-  </div>
   <app-map *ngIf="(coordinates|async) as coords" [coords]="coords"></app-map>
+  <div style="position: absolute; bottom: 0px; width: 100%" class="footer">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="4">
+          <ion-img src="https://i.imgur.com/EMx6uVW.png" style="width:66%;"></ion-img>
+        </ion-col>
+        <ion-col size="6">
+          <p>Votre chauffeur arrive !</p>
+          <p><i>{{ distance }}m - {{ time }}min</i></p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+</div>
 </ion-content>

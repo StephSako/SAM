@@ -13,6 +13,9 @@ const { Toast, Geolocation } = Capacitor.Plugins;
 })
 export class CourseOngoingPage implements OnInit {
 
+  distance: number = -1;
+  time: number = -1;
+
   public coordinates: Observable<GeolocationPosition>;
   public defaultPos: {
     lattitude: 45,
@@ -43,6 +46,9 @@ export class CourseOngoingPage implements OnInit {
       /**
       this.getCurrentLocation();
       /**/
+      //GET DISTANCE AND TIME
+      this.distance = 280;
+      this.time = 3;
   }
 
   async displayLoader() {
