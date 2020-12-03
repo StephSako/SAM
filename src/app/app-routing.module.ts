@@ -22,7 +22,20 @@ const routes: Routes = [
   {
     path: 'maps',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+  },
+  {
+    path: 'account',
+    loadChildren: () => import('./account/account.module').then( m => m.AccountPageModule)
+  },
+  {
+    path: 'course-ongoing',
+    loadChildren: () => import('./course-ongoing/course-ongoing.module').then( m => m.CourseOngoingPageModule)
+  },
+  {
+    path: 'confirm',
+    loadChildren: () => import('./course-confirmation/course-confirmation.module').then( m => m.CourseConfirmationPageModule)
   }
+
 ];
 @NgModule({
   imports: [
