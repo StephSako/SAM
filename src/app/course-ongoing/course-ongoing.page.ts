@@ -7,11 +7,14 @@ import { LoadingController, AlertController } from '@ionic/angular';
 const { Toast, Geolocation } = Capacitor.Plugins;
 
 @Component({
-  selector: 'app-tab1',
-  templateUrl: 'tab1.page.html',
-  styleUrls: ['tab1.page.scss']
+  selector: 'app-course-ongoing',
+  templateUrl: './course-ongoing.page.html',
+  styleUrls: ['./course-ongoing.page.scss'],
 })
-export class Tab1Page implements OnInit {
+export class CourseOngoingPage implements OnInit {
+
+  distance: number = -1;
+  time: number = -1;
 
   public coordinates: Observable<GeolocationPosition>;
   public defaultPos: {
@@ -19,9 +22,9 @@ export class Tab1Page implements OnInit {
     longitude: 9
   };
 
-  constructor(public loading: LoadingController, public alertCtrl: AlertController) {}
+  constructor(public loading: LoadingController, public alertCtrl: AlertController) { }
 
-  ngOnInit() { 
+  ngOnInit() {
     /**/
     // start the loader
     this.displayLoader()
@@ -43,6 +46,9 @@ export class Tab1Page implements OnInit {
       /**
       this.getCurrentLocation();
       /**/
+      //GET DISTANCE AND TIME
+      this.distance = 280;
+      this.time = 3;
   }
 
   async displayLoader() {

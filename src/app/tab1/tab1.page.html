@@ -12,6 +12,6 @@
       <ion-title size="large">Tab 1</ion-title>
     </ion-toolbar>
   </ion-header>
-
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+  <app-map *ngIf="(coordinates|async) as coords" [coords]="coords"></app-map>
+  <ion-fab-button>Test</ion-fab-button>
 </ion-content>
