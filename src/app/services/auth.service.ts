@@ -60,4 +60,17 @@ export class AuthService {
     if (!this.token) { this.token = localStorage.getItem('userToken'); }
     return this.token;
   }
+
+  public editUser(user: UserInterface) {
+    const URL = this.http.put(this.baseURL + 'edit/' + user.id_user, user);
+
+    return URL.pipe(
+      map((data: TokenResponse) => {
+        if (data.token) {
+          this.saveToken(data.token);
+        }
+        return data;
+      })
+    );
+  }
 }

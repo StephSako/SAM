@@ -119,9 +119,18 @@ exports.edit = (req, res) => {
                 let token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
                     expiresIn: 1440
                 })
-                res.json({token: token})
-            }).catch(() => {
-                res.status(500).send("Le compte modifié n'a pas été trouvé")
+                res.json({
+                    success: true,
+                    token: token,
+                    message: "Profil mis à jour"
+                })
+            }).catch((err) => {
+                res.send({
+                    success: false,
+                    title: "Mise à jour du profil",
+                    message: "Le profil n'a pas pu être mis à jour",
+                    messageFull: err.message
+                })
             })
         }
         else res.status(401).send("Le compte n'a pas été modifié")
