@@ -25,6 +25,22 @@ export class LoginPage implements OnInit {
       password: ['', [Validators.required, this.noWhitespaceValidator]],
     })
   }
+  //FONCTIONS A IMPLEMENTER
+  goToClientHome() {
+    console.log("Redirection vers l'accueil client")
+  }
+  goToDriverHome() {
+    console.log("Redirection vers l'accueil chauffeur")
+  }
+  goToAccount() {
+    console.log("Redirection vers le compte")
+  }
+  goToHistory() {
+    console.log("Redirection vers l'historique des courses")
+  }
+  goToParams() {
+    console.log("Redirection vers les paramètres ?")
+  }
 
   onLogin() {
     this.spinnerShown = true;
