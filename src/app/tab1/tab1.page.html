@@ -1,9 +1,19 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+
     <ion-title>
       Tab 1
     </ion-title>
+
   </ion-toolbar>
+  <mat-form-field>
+    <mat-label>Address</mat-label>
+    <input matInput
+           matGoogleMapsAutocomplete
+           [country]="de"
+           (onAutocompleteSelected)="onAutocompleteSelected($event)"
+           (onLocationSelected)="onLocationSelected($event)">
+  </mat-form-field>
 </ion-header>
 
 <ion-content [fullscreen]="true">
@@ -12,6 +22,8 @@
       <ion-title size="large">Tab 1</ion-title>
     </ion-toolbar>
   </ion-header>
-  <app-map *ngIf="(coordinates|async) as coords" [coords]="coords"></app-map>
+  
+  
+  <div id="map"></div>
 
 </ion-content>
