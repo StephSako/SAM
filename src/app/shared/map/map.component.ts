@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import { any } from 'sequelize/types/lib/operators';
 
 declare var google;
 
@@ -15,10 +16,29 @@ export class MapComponent implements AfterViewInit {
     longitude: number
   }
 
+  @Input() map: any;
+  @Input() directionsService: any;
+  private markers = new Array();
+
   constructor() { }
 
   ngAfterViewInit() {
     this.initMap();
+
+    var marker1 = new google.maps.Marker({
+      position: {
+        lat: 48.732219,
+        lng: 2.373088
+      }
+    });
+
+    var marker2 = new google.maps.Marker({
+      position: {
+        lat: 49,
+        lng: 2
+      }
+    });
+    this.trajet(marker1, marker2);
   }
 
   initMap() {
@@ -27,7 +47,7 @@ export class MapComponent implements AfterViewInit {
       lng: this.coords.longitude
     }
     
-    const map = new google.maps.Map(
+    this.map = new google.maps.Map(
       document.getElementById("map"),
       {
         zoom: 12,
@@ -35,34 +55,43 @@ export class MapComponent implements AfterViewInit {
       }
     );
 
-    const directionsService = new google.maps.DirectionsService();
-    const directionsRenderer = new google.maps.DirectionsRenderer();
-    directionsRenderer.setMap(map);
+    this.directionsService = new google.maps.DirectionsService();
 
-    const marker = new google.maps.Marker({
+    this.markers.push(new google.maps.Marker({
       position: POSITION,
-      map: map
-    });
-    const tmpMarker = new google.maps.Marker({
-      position: {
-        lat: 48.732219,
-        lng: 2.373088
-      },
-      map: map
-    });
+      map: this.map
+    }));
+
+  }
+
+  async trajet(start: google.maps.Marker, end: google.maps.Marker) {
+
+    this.clearMarkers();
 
     const request = {
-      origin: marker.getPosition(),
-      destination: tmpMarker.getPosition(),
-      travelMode: 'DRIVING'
-    }
+        origin: start.getPosition(),
+        destination: end.getPosition(),
+        travelMode: 'DRIVING'
+      }
+    
+    let directionsRenderer = new google.maps.DirectionsRenderer();
+    directionsRenderer.setMap(this.map);
 
-    directionsService.route(request, function(result, status) {
+    this.directionsService.route(request, function(result, status) {
       if (status == 'OK') {
         directionsRenderer.setDirections(result);
       }
     });
   }
 
+  clearMarkers() {
+    this.markers.forEach(marker => marker.setMap(null));
+    this.markers = new Array();
+  }
+
+  addMarker(marker: google.maps.Marker) {
+    marker.setMap(this.map);
+    this.markers.push(marker);
+  }
 
 }
