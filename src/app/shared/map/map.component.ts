@@ -26,6 +26,7 @@ export class MapComponent implements AfterViewInit {
       lat: this.coords.latitude,
       lng: this.coords.longitude
     }
+    
     const map = new google.maps.Map(
       document.getElementById("map"),
       {
@@ -33,10 +34,35 @@ export class MapComponent implements AfterViewInit {
         center: POSITION || {lat: 22, lng: 22}
       }
     );
+
+    const directionsService = new google.maps.DirectionsService();
+    const directionsRenderer = new google.maps.DirectionsRenderer();
+    directionsRenderer.setMap(map);
+
     const marker = new google.maps.Marker({
       position: POSITION,
       map: map
-    })
+    });
+    const tmpMarker = new google.maps.Marker({
+      position: {
+        lat: 48.732219,
+        lng: 2.373088
+      },
+      map: map
+    });
+
+    const request = {
+      origin: marker.getPosition(),
+      destination: tmpMarker.getPosition(),
+      travelMode: 'DRIVING'
+    }
+
+    directionsService.route(request, function(result, status) {
+      if (status == 'OK') {
+        directionsRenderer.setDirections(result);
+      }
+    });
   }
+
 
 }
