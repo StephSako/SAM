@@ -25,22 +25,6 @@ export class LoginPage implements OnInit {
       password: ['', [Validators.required, this.noWhitespaceValidator]],
     })
   }
-  //FONCTIONS A IMPLEMENTER
-  goToClientHome() {
-    console.log("Redirection vers l'accueil client")
-  }
-  goToDriverHome() {
-    console.log("Redirection vers l'accueil chauffeur")
-  }
-  goToAccount() {
-    console.log("Redirection vers le compte")
-  }
-  goToHistory() {
-    console.log("Redirection vers l'historique des courses")
-  }
-  goToParams() {
-    console.log("Redirection vers les paramètres ?")
-  }
 
   onLogin() {
     this.spinnerShown = true;
@@ -49,7 +33,8 @@ export class LoginPage implements OnInit {
     .subscribe((data: any) => {
       console.log(data);
       if(data.success) {
-        let snackBarRef = this.snackBar.open('Connexion réussi');
+        sessionStorage.setItem('connected', 'true')
+        let snackBarRef = this.snackBar.open('Connexion réussie');
       } else {
         let snackBarRef = this.snackBar.open(data.message);
       }
