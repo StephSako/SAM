@@ -1,17 +1,36 @@
-import { Component, OnInit } from '@angular/core';
 import { Capacitor, Plugins, GeolocationPosition } from '@capacitor/core';
 import { Observable, of, from as fromPromise } from 'rxjs';
 import { tap, map, switchMap } from 'rxjs/operators';
 import { LoadingController, AlertController } from '@ionic/angular';
+
+import { AfterViewInit, Component, Input, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
+import {Title} from '@angular/platform-browser';
+import {Location, Appearance, GermanAddress} from '@angular-material-extensions/google-maps-autocomplete';
+import PlaceResult = google.maps.places.PlaceResult;
 
 const { Toast, Geolocation } = Capacitor.Plugins;
 
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
-  styleUrls: ['tab1.page.scss']
+  styleUrls: ['tab1.page.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class Tab1Page implements OnInit {
+
+  public appearance = Appearance;
+  public zoom: number;
+  public latitude: number;
+  public longitude: number;
+  public selectedAddress: PlaceResult;
+  public map: google.maps.Map
+
+  public  lat;
+  public  lon;
+  public  bounds;
+
+
+  @ViewChild('map', {read: ElementRef, static: false}) mapRef: ElementRef
 
   public coordinates: Observable<GeolocationPosition>;
   public defaultPos: {
@@ -19,11 +38,13 @@ export class Tab1Page implements OnInit {
     longitude: 9
   };
 
-  constructor(public loading: LoadingController, public alertCtrl: AlertController) {}
+  constructor(public loading: LoadingController, public alertCtrl: AlertController, private titleService: Title) {}
 
   ngOnInit() { 
     /**/
     // start the loader
+    this.lat=45;
+    this.lon = 9
     this.displayLoader()
       .then((loader: any) => {
         // get position
@@ -31,6 +52,9 @@ export class Tab1Page implements OnInit {
           .then(position => {
             //close loader and return position
             loader.dismiss();
+            this.lat = position.coords.latitude;
+            this.lon = position.coords.longitude;
+            this.initMap();
             return position;
           })
           // if error
@@ -81,6 +105,48 @@ export class Tab1Page implements OnInit {
       tap(data => console.log(data))
     );
     return POSITION;
+  }
+
+  initMap() {
+    var input = document.getElementById('pac-input') as HTMLInputElement;
+    //let places = new google.maps.places.PlacesServices(this.map)
+    const POSITION = {
+      lat: this.lat,
+      lng: this.lon
+    }
+    this.map = new google.maps.Map(
+      document.getElementById("map"),
+      {
+        zoom: 12,
+        center: POSITION || {lat: 22, lng: 22},
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        streetViewControl: false,
+        disableDefaultUI: true,
+      }
+    );
+
+  }
+
+  onAutocompleteSelected(result: PlaceResult) {
+    console.log('onAutocompleteSelected: ', result);
+  }
+
+  onLocationSelected(location: Location) {
+    console.log('onLocationSelected: ', location);
+    this.latitude = location.latitude;
+    this.longitude = location.longitude;
+    const self = this;
+    let pt = new google.maps.LatLng(this.latitude, this.longitude);
+    new google.maps.Marker({
+      position: pt,
+      map: this.map
+    })
+    this.map.setCenter(pt);
+    this.map.setZoom(12);
+  }
+
+  onGermanAddressMapped($event: GermanAddress) {
+    console.log('onGermanAddressMapped', $event);
   }
 
 }
