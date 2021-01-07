@@ -4,9 +4,11 @@ import { tap, map, switchMap } from 'rxjs/operators';
 import { LoadingController, AlertController } from '@ionic/angular';
 
 import { AfterViewInit, Component, Input, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
-import {Title} from '@angular/platform-browser';
-import {Location, Appearance, GermanAddress} from '@angular-material-extensions/google-maps-autocomplete';
+import { Title } from '@angular/platform-browser';
+import { Location, Appearance, GermanAddress } from '@angular-material-extensions/google-maps-autocomplete';
 import PlaceResult = google.maps.places.PlaceResult;
+import { AuthService } from '../services/auth.service';
+import { DriverData } from './driver-data.model';
 
 const { Toast, Geolocation } = Capacitor.Plugins;
 
@@ -24,13 +26,14 @@ export class Tab1Page implements OnInit {
   public longitude: number;
   public selectedAddress: PlaceResult;
   public map: google.maps.Map
+  private drivers: DriverData[];
 
-  public  lat;
-  public  lon;
-  public  bounds;
+  public lat;
+  public lon;
+  public bounds;
 
 
-  @ViewChild('map', {read: ElementRef, static: false}) mapRef: ElementRef
+  @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef
 
   public coordinates: Observable<GeolocationPosition>;
   public defaultPos: {
@@ -38,12 +41,22 @@ export class Tab1Page implements OnInit {
     longitude: 9
   };
 
-  constructor(public loading: LoadingController, public alertCtrl: AlertController, private titleService: Title) {}
+  constructor(
+    public loading: LoadingController,
+    public alertCtrl: AlertController,
+    private titleService: Title,
+    private authService: AuthService
+  ) { }
 
-  ngOnInit() { 
+  ngOnInit() {
+    this.authService
+      .getDrivers()
+      .subscribe((drivers: DriverData[]) => {
+        this.drivers = drivers;
+      })
     /**/
     // start the loader
-    this.lat=45;
+    this.lat = 45;
     this.lon = 9
     this.displayLoader()
       .then((loader: any) => {
@@ -51,10 +64,12 @@ export class Tab1Page implements OnInit {
         return this.getCurrentLocation()
           .then(position => {
             //close loader and return position
+            console.log(position);
             loader.dismiss();
             this.lat = position.coords.latitude;
             this.lon = position.coords.longitude;
             this.initMap();
+            this.placeDriverMarker();
             return position;
           })
           // if error
@@ -64,9 +79,9 @@ export class Tab1Page implements OnInit {
             return null;
           });
       });
-      /**
-      this.getCurrentLocation();
-      /**/
+    /**
+    this.getCurrentLocation();
+    /**/
   }
 
   async displayLoader() {
@@ -92,10 +107,10 @@ export class Tab1Page implements OnInit {
     const isAvailable: boolean = Capacitor.isPluginAvailable("Geolocation");
     if (!isAvailable) {
       console.log("ERR: Plugin is not available");
-      return of (new Error("ERR: Plugin not available"));
+      return of(new Error("ERR: Plugin not available"));
     }
     const POSITION = Plugins.Geolocation.getCurrentPosition()
-    // handle Capacitor errors
+      // handle Capacitor errors
       .catch(err => {
         console.log("ERR", err);
         return new Error(err.message || "customized message");
@@ -105,6 +120,29 @@ export class Tab1Page implements OnInit {
       tap(data => console.log(data))
     );
     return POSITION;
+  }
+
+  placeDriverMarker() {
+    console.log("drivers");
+    console.log(this.drivers);
+    this.drivers.forEach(driver => {
+      //console.log(driver);
+      if ((driver.longitude_pos) && (driver.latitude_pos)) {
+        console.log(driver.latitude_pos);
+        let msg = "<b>" + driver.firstname + " " + driver.lastname + " à 3km"
+        let info = new google.maps.InfoWindow({
+          content: msg
+        })
+        let marker = new google.maps.Marker({
+          position: { lat: driver.latitude_pos, lng: driver.longitude_pos },
+          map: this.map,
+          icon: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png"
+        })
+        marker.addListener("click", () => {
+          info.open(this.map, marker);
+        })
+      }
+    })
   }
 
   initMap() {
@@ -118,12 +156,13 @@ export class Tab1Page implements OnInit {
       document.getElementById("map"),
       {
         zoom: 12,
-        center: POSITION || {lat: 22, lng: 22},
+        center: POSITION || { lat: 22, lng: 22 },
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         streetViewControl: false,
         disableDefaultUI: true,
       }
     );
+
 
   }
 

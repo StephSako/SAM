@@ -73,4 +73,8 @@ export class AuthService {
       })
     );
   }
+
+  public getDrivers() {
+    return this.http.get(this.baseURL + 'drivers');
+  }
 }

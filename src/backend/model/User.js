@@ -27,6 +27,14 @@ module.exports = db.sequelize.define(
             unique: true,
             allowNull: false
         },
+        latitude_pos: {
+            type: Sequelize.FLOAT,
+            allowNull: true
+        },
+        longitude_pos: {
+            type: Sequelize.FLOAT,
+            allowNull: true
+        },
         phone_number: {
             type: Sequelize.STRING,
             unique: true,

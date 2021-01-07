@@ -141,3 +141,9 @@ exports.edit = (req, res) => {
         else res.status(401).send("Une erreur est survenue dans la mise à jour du compte")
     })
 }
+
+exports.getDrivers = (req, res) => {
+    User.findAll().then(users => {
+        res.json(users);
+    })
+}
