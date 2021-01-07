@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>course-ongoing</ion-title>
+    <ion-title>Client</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -13,8 +13,12 @@
           <ion-img src="https://i.imgur.com/EMx6uVW.png" style="width:66%;"></ion-img>
         </ion-col>
         <ion-col size="6">
-          <p>Votre chauffeur arrive !</p>
+          <p>Client</p>
           <p><i>{{ distance }}m - {{ time }}min</i></p>
+          <br>
+    <ion-button color="primary" shape="round" >Chauffeur arrivé</ion-button >
+    <br>
+    <ion-button color="primary" shape="round" >Chauffeur reparti</ion-button >
         </ion-col>
       </ion-row>
     </ion-grid>
@@ -22,5 +26,5 @@
 </ion-content>
 
 <ion-content padding>
-  <div #mapElement class="map2"></div>
+  <div #mapElement class="mapclient"></div>
 </ion-content>

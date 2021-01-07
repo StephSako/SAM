@@ -7,11 +7,11 @@ import { LoadingController, AlertController } from '@ionic/angular';
 const { Toast, Geolocation } = Capacitor.Plugins;
 
 @Component({
-  selector: 'app-course-ongoing',
-  templateUrl: './course-ongoing.page.html',
-  styleUrls: ['./course-ongoing.page.scss'],
+  selector: 'app-driver-map',
+  templateUrl: './driver-map.page.html',
+  styleUrls: ['./driver-map.page.scss'],
 })
-export class CourseOngoingPage implements OnInit {
+export class DriverMapPage implements OnInit {
 
   distance: number = -1;
   time: number = -1;

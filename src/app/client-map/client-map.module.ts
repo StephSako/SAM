@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { CourseOngoingPageRoutingModule } from './course-ongoing-routing.module';
+import { ClientMapPageRoutingModule } from './client-map-routing.module';
 
-import { CourseOngoingPage } from './course-ongoing.page';
+import { ClientMapPage } from './client-map.page';
 import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
@@ -14,10 +14,10 @@ import { SharedModule } from '../shared/shared.module';
     CommonModule,
     FormsModule,
     IonicModule,
-    CourseOngoingPageRoutingModule,
+    ClientMapPageRoutingModule,
     SharedModule
   ],
-  declarations: [CourseOngoingPage],
+  declarations: [ClientMapPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class CourseOngoingPageModule {}
+export class ClientMapPageModule {}

@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { CourseOngoingPageRoutingModule } from './course-ongoing-routing.module';
+import { DriverMapPageRoutingModule } from './driver-map-routing.module';
 
-import { CourseOngoingPage } from './course-ongoing.page';
+import { DriverMapPage } from './driver-map.page';
 import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
@@ -14,10 +14,10 @@ import { SharedModule } from '../shared/shared.module';
     CommonModule,
     FormsModule,
     IonicModule,
-    CourseOngoingPageRoutingModule,
+    DriverMapPageRoutingModule,
     SharedModule
   ],
-  declarations: [CourseOngoingPage],
+  declarations: [DriverMapPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class CourseOngoingPageModule {}
+export class DriverMapPageModule {}
