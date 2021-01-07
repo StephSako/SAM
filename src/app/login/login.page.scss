@@ -2,12 +2,19 @@ ion-content {
     --ion-background-color: linear-gradient(#4adce6, #a1e9ef) fixed;
   }
   
-  .flex {
-    display: flex;
-    justify-content: space-between;
-  }
-  
   .logo ion-icon{
     height: 250px;
   }
   
+  mat-form-field {
+    width: 100%;
+  }
+  
+  ion-item {
+    border-radius: 20px;
+    margin: 5px;
+  }
+
+  mat-error {
+    margin: 10px;
+  }

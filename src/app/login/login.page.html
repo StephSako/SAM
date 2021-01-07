@@ -1,20 +1,30 @@
-<ion-content >
-  
+<ion-content>
+
   <div class="padding">
     <div class="logo">
       <ion-img src="https://i.imgur.com/EMx6uVW.png" style="height:300px"></ion-img>
       
     </div>
-    <ion-item color="light" expand="block" shape="round" fill="outline">
-      <ion-input color="dark" type="mail" placeholder="Adresse email"></ion-input >
-    </ion-item >
 
-    <ion-item color="light" expand="block" shape="round" fill="outline">
-      <ion-input color="dark" type="password" placeholder="Mot de passe"></ion-input >
-    </ion-item >
-    <ion-button color="light" expand="block" shape="round" fill="outline">Connexion</ion-button >
-    <br>
-    <ion-button color="tertiary" expand="block" shape="round" (click)="GoToInscription()" routerLink="/sign-up">Inscription</ion-button >
+    <form [formGroup]="login" (ngSubmit)="onLogin()">
+      <mat-error *ngIf="this.login.controls.email.invalid && this.login.controls.email.touched">
+        {{  getErrorMessageLogin() }}
+      </mat-error>
+      <ion-item color="light" expand="block" shape="round" fill="outline">
+        <ion-input [(ngModel)]="credentials.login_user" color="dark" type="text" name="email" placeholder="Adresse email" formControlName="email"></ion-input>
+
+      </ion-item >
+      <br>
+      <mat-error *ngIf="this.login.controls.password.invalid && this.login.controls.password.touched">
+        {{  getErrorMessagePassword() }}
+      </mat-error>
+      <ion-item color="light" expand="block" shape="round" fill="outline">
+        <ion-input  [(ngModel)]="credentials.password_user" color="dark" type="password" placeholder="Mot de passe" name="password" formControlName="password"></ion-input >
+        </ion-item >
+        <br>
+      <ion-button color="tertiary" expand="block" shape="round" type="submit" [disabled]="!login.valid">Connexion</ion-button >
+      <br>
+      <p style="text-align: center; font-size: 20px; margin: 30px;">Inscription</p>
+    </form>
   </div>
-
 </ion-content>

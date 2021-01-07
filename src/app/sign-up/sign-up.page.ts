@@ -29,7 +29,7 @@ export class SignUpPage implements OnInit {
       email: ['', [Validators.required, this.noWhitespaceValidator, Validators.email]],
       phone: ['', [this.phoneNumberValidator]],
       password: ['', [Validators.required, this.noWhitespaceValidator]],
-      confirmPassword: ['', [Validators.required, this.noWhitespaceValidator, this.passwordMatchValidator]]
+      confirmPassword: ['', [this.passwordMatchValidator]]
     })
   }
 
@@ -79,6 +79,4 @@ export class SignUpPage implements OnInit {
       return null;
     }
   }
-
-  
 }

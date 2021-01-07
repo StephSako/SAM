@@ -14,6 +14,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { SignUpPageRoutingModule } from './sign-up-routing.module';
 
 import { SignUpPage } from './sign-up.page';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   imports: [
@@ -27,7 +28,8 @@ import { SignUpPage } from './sign-up.page';
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    HttpClientModule,
   ],
   declarations: [SignUpPage]
 })
