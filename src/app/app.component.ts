@@ -27,7 +27,7 @@ export class AppComponent {
 
   //FONCTIONS A IMPLEMENTER
   goToClientHome() {
-    console.log("Redirection vers l'accueil client")
+    this.router.navigate(['/client-home'])
   }
   goToDriverHome() {
     console.log("Redirection vers l'accueil chauffeur")

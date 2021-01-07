@@ -20,9 +20,18 @@ const routes: Routes = [
     loadChildren: () => import('./course-ongoing/course-ongoing.module').then( m => m.CourseOngoingPageModule)
   },
   {
+    path: 'course-confirmation',
+    loadChildren: () => import('./course-confirmation/course-confirmation.module').then( m => m.CourseConfirmationPageModule)
+  },
+  {
     path: 'maps',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+  },
+  {
+    path: 'client-home',
+    loadChildren: () => import('./client-home/client-home.module').then( m => m.ClientHomePageModule)
   }
+
 ];
 @NgModule({
   imports: [
