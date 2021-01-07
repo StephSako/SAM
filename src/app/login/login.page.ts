@@ -3,6 +3,8 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TokenPayloadLogin } from '../Interfaces/UserInterface';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
+//import { UserInterface } from '../Interfaces/UserInterface';
 
 
 @Component({
@@ -12,6 +14,8 @@ import { AuthService } from '../services/auth.service';
 })
 export class LoginPage implements OnInit {
 
+  //user: UserInterface;
+
   login: FormGroup;
   spinnerShown: boolean;
   credentials: TokenPayloadLogin = {
@@ -19,7 +23,8 @@ export class LoginPage implements OnInit {
     password_user: null,
   };
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService, private snackBar: MatSnackBar) {
+  constructor(private formBuilder: FormBuilder, private authService: AuthService, private snackBar: MatSnackBar,
+    private router: Router) {
     this.login = this.formBuilder.group({
       email: ['', [Validators.required, this.noWhitespaceValidator]],
       password: ['', [Validators.required, this.noWhitespaceValidator]],
@@ -27,13 +32,19 @@ export class LoginPage implements OnInit {
   }
 
   onLogin() {
+    //var self = this
     this.spinnerShown = true;
     console.log(this.login.value);
     this.authService.login(this.credentials)
     .subscribe((data: any) => {
       console.log(data);
       if(data.success) {
-        let snackBarRef = this.snackBar.open('Connexion réussi');
+        //self.user = this.authService.getUserDetails();
+        //sessionStorage.setItem('firstname', self.user.firstname)
+        //sessionStorage.setItem('lastname', self.user.lastname)
+        sessionStorage.setItem('connected', 'true')
+        let snackBarRef = this.snackBar.open('Connexion réussie');
+        this.router.navigate(['/client-home'])
       } else {
         let snackBarRef = this.snackBar.open(data.message);
       }
