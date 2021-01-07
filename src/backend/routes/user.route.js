@@ -14,6 +14,9 @@ router.get("/profile", user.profile);
 //Edit profile
 router.put("/edit/:id_user", user.edit);
 
+//Get all drivers
+router.get("/drivers", user.getDrivers);
+
 module.exports = router;
 
 
