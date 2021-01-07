@@ -12,9 +12,15 @@
     <ion-item color="light" expand="block" shape="round" fill="outline">
       <ion-input color="dark" type="password" placeholder="Mot de passe"></ion-input >
     </ion-item >
-    <ion-button color="light" expand="block" shape="round" fill="outline">Connexion</ion-button >
+    <ion-button color="light" expand="block" shape="round" fill="outline" routerLink="/map2">Connexion</ion-button >
     <br>
-    <ion-button color="tertiary" expand="block" shape="round" (click)="GoToInscription()" routerLink="/sign-up">Inscription</ion-button >
+    <ion-button color="primary" expand="block" shape="round" routerLink="/SignUp">Inscription</ion-button >
+    <br>
+    <ion-button color="primary" expand="block" shape="round" routerLink="/mapdriver">Chauffeur</ion-button >
+    <br>
+    <ion-button color="primary" expand="block" shape="round" routerLink="/mapclient">Client</ion-button >
+    <br>
+    <ion-button color="primary" expand="block" shape="round" routerLink="/history">Historique</ion-button >
   </div>
 
 </ion-content>
