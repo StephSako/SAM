@@ -16,7 +16,7 @@
         <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Jean-Michel Loufard</ion-title>
+    <ion-title><span *ngIf="user">{{ user.firstname | titlecase }} {{ user.lastname | uppercase}}</span></ion-title>
   </ion-toolbar>
   
   <ion-menu side="start" menuId="first" contentId="main">
