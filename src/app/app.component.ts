@@ -30,13 +30,13 @@ export class AppComponent {
     this.router.navigate(['/client-home'])
   }
   goToDriverHome() {
-    console.log("Redirection vers l'accueil chauffeur")
+    this.router.navigate(['/mapdriver'])
   }
   goToAccount() {
     this.router.navigate(['/account'])
   }
   goToHistory() {
-    console.log("Redirection vers l'historique des courses")
+    this.router.navigate(['/history'])
   }
   goToParams() {
     console.log("Redirection vers les paramètres ?")
