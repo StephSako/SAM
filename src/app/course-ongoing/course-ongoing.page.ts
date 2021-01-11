@@ -18,7 +18,11 @@ export class CourseOngoingPage implements OnInit {
   time: number = -1;
   lon;
   lat;
-  public map: google.maps.Map
+  currLon;
+  currLat;
+  private directionService;
+  public map: google.maps.Map;
+  private markers = new Array();
 
   public coordinates: Observable<GeolocationPosition>;
   public defaultPos: {
@@ -41,6 +45,7 @@ export class CourseOngoingPage implements OnInit {
           console.log(this.lon);
         }
       })
+      this.directionService = new google.maps.DirectionsService();
     }
 
   ngOnInit() {
@@ -52,9 +57,12 @@ export class CourseOngoingPage implements OnInit {
         return this.getCurrentLocation()
           .then(position => {
             //close loader and return position
-           
+           this.currLat = position.coords.latitude;
+           this.currLon = position.coords.longitude;
             loader.dismiss();
             this.initMap();
+            this.trajet();
+            
             return position;
           })
           // if error
@@ -130,5 +138,56 @@ export class CourseOngoingPage implements OnInit {
     );
     const footer = document.getElementById("footer");
     this.map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(footer);
+  }
+
+   trajet() {
+    this.clearMarkers();
+    let start = new google.maps.Marker({
+      position: {
+        lat: this.currLat,
+        lng: this.currLon
+      }
+    });
+
+    let end = new google.maps.Marker({
+      position: {
+        lat: this.lat,
+        lng: this.lon
+      }
+    });
+    this.markers.push(start);
+    this.markers.push(end);
+    
+
+    const request = {
+        origin: start.getPosition(),
+        destination: end.getPosition(),
+        travelMode: 'DRIVING'
+      }
+    
+    let directionsRenderer = new google.maps.DirectionsRenderer({
+      preserveViewport: true,
+      suppressMarkers: false,
+      map: this.map
+    });
+    directionsRenderer.setMap(this.map);
+
+    this.directionService.route(request, function(result, status) {
+      
+      if (status == 'OK') {
+        directionsRenderer.setDirections(result);
+        //this.map.fitBounds(directionsRenderer.getDirections().routes[0].bounds);
+      }
+    });
+  }
+
+  addMarker(marker: google.maps.Marker) {
+    marker.setMap(this.map);
+    this.markers.push(marker);
+  }
+
+  clearMarkers() {
+    this.markers.forEach(marker => marker.setMap(null));
+    this.markers = new Array();
   }
 }
