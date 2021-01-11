@@ -19,7 +19,7 @@ import {MatGoogleMapsAutocompleteModule} from '@angular-material-extensions/goog
   declarations: [AppComponent],
   entryComponents: [],
   imports: [
-    BrowserModule, 
+    BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
         AgmCoreModule.forRoot({
