@@ -43,10 +43,14 @@ export class LoginPage implements OnInit {
         //sessionStorage.setItem('firstname', self.user.firstname)
         //sessionStorage.setItem('lastname', self.user.lastname)
         sessionStorage.setItem('connected', 'true')
-        let snackBarRef = this.snackBar.open('Connexion réussie');
+        let snackBarRef = this.snackBar.open('Connexion réussie', "Ok", {
+          duration: 1500
+        });
         this.router.navigate(['/client-home'])
       } else {
-        let snackBarRef = this.snackBar.open(data.message);
+        let snackBarRef = this.snackBar.open(data.message, "Ok", {
+          duration: 1500
+        });
       }
     })
   }
