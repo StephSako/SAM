@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Capacitor, Plugins, GeolocationPosition } from '@capacitor/core';
 import { Observable, of, from as fromPromise } from 'rxjs';
 import { tap, map, switchMap } from 'rxjs/operators';
 import { LoadingController, AlertController } from '@ionic/angular';
+import { ActivatedRoute, Router } from '@angular/router';
 
 const { Toast, Geolocation } = Capacitor.Plugins;
 
@@ -15,6 +16,9 @@ export class CourseOngoingPage implements OnInit {
 
   distance: number = -1;
   time: number = -1;
+  lon;
+  lat;
+  public map: google.maps.Map
 
   public coordinates: Observable<GeolocationPosition>;
   public defaultPos: {
@@ -22,7 +26,22 @@ export class CourseOngoingPage implements OnInit {
     longitude: 9
   };
 
-  constructor(public loading: LoadingController, public alertCtrl: AlertController) { }
+  @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef
+
+  constructor(public loading: LoadingController,
+    public alertCtrl: AlertController,
+    private route: ActivatedRoute,
+    private router: Router) {
+      this.route.queryParams.subscribe(params => {
+        if(this.router.getCurrentNavigation().extras.state) {
+          this.lon = this.router.getCurrentNavigation().extras.state.lon;
+          this.lat = this.router.getCurrentNavigation().extras.state.lat;
+          console.log("LOCATION")
+          console.log(this.lat);
+          console.log(this.lon);
+        }
+      })
+    }
 
   ngOnInit() {
     /**/
@@ -33,22 +52,25 @@ export class CourseOngoingPage implements OnInit {
         return this.getCurrentLocation()
           .then(position => {
             //close loader and return position
+           
             loader.dismiss();
+            this.initMap();
             return position;
           })
           // if error
           .catch(err => {
             // close loader and return Null
             loader.dismiss();
+            console.log(err);
             return null;
           });
       });
-      /**
-      this.getCurrentLocation();
-      /**/
-      //GET DISTANCE AND TIME
-      this.distance = 280;
-      this.time = 3;
+    /**
+    this.getCurrentLocation();
+    /**/
+    //GET DISTANCE AND TIME
+    this.distance = 280;
+    this.time = 3;
   }
 
   async displayLoader() {
@@ -74,10 +96,10 @@ export class CourseOngoingPage implements OnInit {
     const isAvailable: boolean = Capacitor.isPluginAvailable("Geolocation");
     if (!isAvailable) {
       console.log("ERR: Plugin is not available");
-      return of (new Error("ERR: Plugin not available"));
+      return of(new Error("ERR: Plugin not available"));
     }
     const POSITION = Plugins.Geolocation.getCurrentPosition()
-    // handle Capacitor errors
+      // handle Capacitor errors
       .catch(err => {
         console.log("ERR", err);
         return new Error(err.message || "customized message");
@@ -89,4 +111,24 @@ export class CourseOngoingPage implements OnInit {
     return POSITION;
   }
 
+  initMap() {
+    //let places = new google.maps.places.PlacesServices(this.map)
+    const POSITION = {
+      lat: this.lat,
+      lng: this.lon
+    }
+    console.log(POSITION);
+    this.map = new google.maps.Map(
+      document.getElementById("map2"),
+      {
+        zoom: 12,
+        center: POSITION,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        streetViewControl: false,
+        disableDefaultUI: true,
+      }
+    );
+    const footer = document.getElementById("footer");
+    this.map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(footer);
+  }
 }

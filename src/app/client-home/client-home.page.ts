@@ -8,6 +8,7 @@ import { AuthService } from '../services/auth.service';
 import { Appearance } from '@angular-material-extensions/google-maps-autocomplete';
 import { DriverData } from '../tab1/driver-data.model';
 import PlaceResult = google.maps.places.PlaceResult;
+import { Router } from '@angular/router';
 
 const { Toast, Geolocation } = Capacitor.Plugins;
 
@@ -40,7 +41,7 @@ export class ClientHomePage implements OnInit {
 
   @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef
 
-  constructor(public loading: LoadingController, public alertCtrl: AlertController, private authService: AuthService) { }
+  constructor(public loading: LoadingController, public alertCtrl: AlertController, private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
     this.user = this.authService.getUserDetails();
@@ -63,7 +64,7 @@ export class ClientHomePage implements OnInit {
             this.lat = position.coords.latitude;
             this.lon = position.coords.longitude;
             this.initMap();
-            //this.placeDriverMarker();
+            this.placeDriverMarker();
             return position;
           })
           // if error
@@ -85,6 +86,10 @@ export class ClientHomePage implements OnInit {
 
   goback() {
     console.log("retour à la page précédente");
+  }
+
+  redirect() {
+    this.router.navigate(['/search-place']);
   }
 
   async displayLoader() {
@@ -132,7 +137,7 @@ export class ClientHomePage implements OnInit {
       //console.log(driver);
       if ((driver.longitude_pos) && (driver.latitude_pos)) {
         console.log(driver.latitude_pos);
-        let msg = "<br/> <b>" + driver.firstname + " " + driver.lastname + " à 3km <br/>"
+        let msg = "<b>" + driver.firstname + " " + driver.lastname + " à 3km <br/>"
         let info = new google.maps.InfoWindow({
           content: msg
         })
