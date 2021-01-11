@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { TokenPayloadLogin, TokenPayloadRegister, TokenResponse, UserInterface } from '../interfaces/UserInterface';
+import { TokenPayloadLogin, TokenPayloadRegister, TokenResponse, UserInterface } from '../interfaces/userInterface';
 
 @Injectable({
   providedIn: 'root'

@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TokenPayloadLogin } from '../Interfaces/UserInterface';
+import { TokenPayloadLogin } from '../interfaces/userInterface';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
-//import { UserInterface } from '../Interfaces/UserInterface';
+import { UserInterface } from '../interfaces/userInterface';
 
 
 @Component({
@@ -43,14 +43,10 @@ export class LoginPage implements OnInit {
         //sessionStorage.setItem('firstname', self.user.firstname)
         //sessionStorage.setItem('lastname', self.user.lastname)
         sessionStorage.setItem('connected', 'true')
-        let snackBarRef = this.snackBar.open('Connexion réussie', "Ok", {
-          duration: 1500
-        });
+        let snackBarRef = this.snackBar.open('Connexion réussie');
         this.router.navigate(['/client-home'])
       } else {
-        let snackBarRef = this.snackBar.open(data.message, "Ok", {
-          duration: 1500
-        });
+        let snackBarRef = this.snackBar.open(data.message);
       }
     })
   }
