@@ -1,12 +1,5 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Client</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content>
-  <app-map *ngIf="(coordinates|async) as coords" [coords]="coords"></app-map>
-  <div style="position: absolute; bottom: 0px; width: 100%" class="footer">
+<div id="mapclient"></div>
+  <div style="position: absolute; bottom: 0px; width: 100%" class="footer" id="footerclient">
     <ion-grid>
       <ion-row>
         <ion-col size="4">
@@ -23,8 +16,3 @@
       </ion-row>
     </ion-grid>
   </div>
-</ion-content>
-
-<ion-content padding>
-  <div #mapElement class="mapclient"></div>
-</ion-content>
