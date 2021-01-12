@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Capacitor, Plugins, GeolocationPosition } from '@capacitor/core';
 import { Observable, of, from as fromPromise } from 'rxjs';
 import { tap, map, switchMap } from 'rxjs/operators';
@@ -17,6 +17,12 @@ export class DriverMapPage implements OnInit {
   time: number = -1;
 
   public coordinates: Observable<GeolocationPosition>;
+  public lat;
+  public lon;
+  public bounds;
+  public map: google.maps.Map;
+
+  @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef
   public defaultPos: {
     lattitude: 45,
     longitude: 9
@@ -34,6 +40,9 @@ export class DriverMapPage implements OnInit {
           .then(position => {
             //close loader and return position
             loader.dismiss();
+            this.lat = position.coords.latitude;
+            this.lon = position.coords.longitude;
+            this.initMap();
             return position;
           })
           // if error
@@ -87,6 +96,25 @@ export class DriverMapPage implements OnInit {
       tap(data => console.log(data))
     );
     return POSITION;
+  }
+
+  initMap() {
+    const POSITION = {
+      lat: this.lat,
+      lng: this.lon
+    }
+    this.map = new google.maps.Map(
+      document.getElementById("mapdriver"),
+      {
+        zoom: 12,
+        center: POSITION || { lat: 22, lng: 22 },
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        streetViewControl: false,
+        disableDefaultUI: true,
+      }
+    );
+    const footer = document.getElementById("footerdriver");
+    this.map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(footer);
   }
 
 }
