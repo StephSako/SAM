@@ -14,6 +14,9 @@ router.get("/profile", user.profile);
 //Edit profile
 router.put("/edit/:id_user", user.edit);
 
+//Update location
+router.put("/edit/location/:id_user", user.editLocation);
+
 //Get all drivers
 router.get("/drivers", user.getDrivers);
 
