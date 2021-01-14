@@ -158,6 +158,11 @@ export class CourseOngoingPage implements OnInit {
     this.markers.push(start);
     this.markers.push(end);
     
+    new google.maps.DistanceMatrixService().getDistanceMatrix({
+      origins: [start.getPosition()],
+      destinations: [end.getPosition()],
+      travelMode: google.maps.TravelMode.DRIVING
+    }, this.callbackDistance);
 
     const request = {
         origin: start.getPosition(),
@@ -179,6 +184,29 @@ export class CourseOngoingPage implements OnInit {
         //this.map.fitBounds(directionsRenderer.getDirections().routes[0].bounds);
       }
     });
+  }
+
+  callbackDistance(response, status) {
+    if (status == 'OK') {
+      var origins = response.originAddresses;
+      var destinations = response.destinationAddresses;
+  
+      for (var i = 0; i < origins.length; i++) {
+        var results = response.rows[i].elements;
+        for (var j = 0; j < results.length; j++) {
+          var element = results[j];
+          console.log(element);
+          var distance = element.distance.text;
+          console.log(distance);
+          var duration = element.duration.text;
+          console.log(duration);
+          var from = origins[i];
+          console.log(from);
+          var to = destinations[j];
+          console.log(to);
+        }
+      }
+    }
   }
 
   addMarker(marker: google.maps.Marker) {
