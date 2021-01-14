@@ -7,56 +7,61 @@
     <form [formGroup]="signUp" (ngSubmit)="onSignup()">
       <ion-button color="light" expand="block" shape="round">Photo</ion-button >
         <br>
+        <mat-error *ngIf="(signUp.controls.firstname.hasError('required') || signUp.controls.firstname.hasError('whitespace')) && signUp.controls.firstname.touched">
+          Le champ prénom est requis
+        </mat-error>
         <ion-item color="light" expand="block" shape="round" fill="outline">
           <ion-input [(ngModel)]="credentials.firstname_user" color="dark" type="text" name="prenom" placeholder="Prénom" formControlName="firstname"></ion-input >
-          <mat-error *ngIf="(signUp.controls.firstname.hasError('required') || signUp.controls.firstname.hasError('whitespace')) && signUp.controls.firstname.touched">
-            Le champ prénom est requis
-          </mat-error>
-        </ion-item>
+
+          </ion-item>
+
         <br>
+        <mat-error *ngIf="(signUp.controls.lastname.hasError('required') || signUp.controls.lastname.hasError('whitespace')) && signUp.controls.lastname.touched">
+          Le champ nom est requis
+        </mat-error>
         <ion-item color="light" expand="block" shape="round" fill="outline">
           <ion-input [(ngModel)]="credentials.lastname_user" color="dark" type="text" name="lastname" placeholder="Nom" formControlName="lastname"></ion-input >
-            <mat-error *ngIf="(signUp.controls.lastname.hasError('required') || signUp.controls.lastname.hasError('whitespace')) && signUp.controls.lastname.touched">
-              Le champ nom est requis
-            </mat-error>
+
           </ion-item >
         <br>
+        <mat-error *ngIf="(signUp.controls.email.hasError('required') || signUp.controls.email.hasError('whitespace')) && signUp.controls.email.touched">
+          Le champ mail est requis
+        </mat-error>
         <ion-item color="light" expand="block" shape="round" fill="outline">
           <ion-input [(ngModel)]="credentials.email_user" color="dark" type="text" name="email" placeholder="Adresse email" formControlName="email"></ion-input>
-          <mat-error *ngIf="(signUp.controls.email.hasError('required') || signUp.controls.email.hasError('whitespace')) && signUp.controls.email.touched">
-            Le champ mail est requis
-          </mat-error>
+
           <mat-error *ngIf="(signUp.controls.email.hasError('email')) && signUp.controls.email.touched">
             Le champ mail n'est pas valide
           </mat-error>
         </ion-item >
         <br>
+        <mat-error *ngIf="(signUp.controls.phone.hasError('required') || signUp.controls.phone.hasError('whitespace')) && signUp.controls.phone.touched">
+          Le champ téléphone est requis
+        </mat-error>
+        <mat-error *ngIf="(signUp.controls.phone.hasError('phone_invalid')) && signUp.controls.phone.touched">
+          Le champ téléphone est invalide
+        </mat-error>
         <ion-item color="light" expand="block" shape="round" fill="outline">
           <ion-input [(ngModel)]="credentials.phone_number_user" color="dark" type="text" name="phone_number" placeholder="Téléphone" formControlName="phone"></ion-input >
-            <mat-error *ngIf="(signUp.controls.phone.hasError('required') || signUp.controls.phone.hasError('whitespace')) && signUp.controls.phone.touched">
-              Le champ téléphone est requis
-            </mat-error>
-            <mat-error *ngIf="(signUp.controls.phone.hasError('phone_invalid')) && signUp.controls.phone.touched">
-              Le champ téléphone est invalide
-            </mat-error>
           </ion-item >
         <br>
+        <mat-error *ngIf="(signUp.controls.password.hasError('required') || signUp.controls.password.hasError('whitespace')) && signUp.controls.password.touched">
+          Le champ mot de passe est requis
+        </mat-error>
         <ion-item color="light" expand="block" shape="round" fill="outline">
           <ion-input [(ngModel)]="credentials.password_user" color="dark" type="password" name="password" placeholder="Mot de passe" formControlName="password"></ion-input >
-            <mat-error *ngIf="(signUp.controls.password.hasError('required') || signUp.controls.password.hasError('whitespace')) && signUp.controls.password.touched">
-              Le champ mot de passe est requis
-            </mat-error>
+
 
           </ion-item >
         <br>
+        <mat-error *ngIf="(signUp.controls.confirmPassword.hasError('required') || signUp.controls.confirmPassword.hasError('whitespace')) && signUp.controls.confirmPassword.touched">
+          Le champ mot de passe est requis
+        </mat-error>
+        <mat-error *ngIf="(signUp.controls.confirmPassword.hasError('ConfirmPassword')) && signUp.controls.confirmPassword.touched">
+          Les mots de passe ne correspondent pas
+        </mat-error>
         <ion-item color="light" expand="block" shape="round" fill="outline">
           <ion-input color="dark" type="password" name="confirm_password" placeholder="Confirmer le mot de passe" formControlName="confirmPassword"></ion-input >
-            <mat-error *ngIf="(signUp.controls.confirmPassword.hasError('required') || signUp.controls.confirmPassword.hasError('whitespace')) && signUp.controls.confirmPassword.touched">
-              Le champ mot de passe est requis
-            </mat-error>
-            <mat-error *ngIf="(signUp.controls.confirmPassword.hasError('ConfirmPassword')) && signUp.controls.confirmPassword.touched">
-              Les mots de passe ne correspondent pas
-            </mat-error>
           </ion-item >
         <br>
         <ion-button color="tertiary" expand="block" shape="round" type="submit" [disabled]="!signUp.valid">Inscription</ion-button >

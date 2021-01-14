@@ -8,10 +8,6 @@ const routes: Routes = [
     loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
   },
   {
-    path: 'SignUp',
-    loadChildren: () => import('./sign-up/sign-up.module').then( m => m.SignUpPageModule)
-  },
-  {
     path: 'map',
     loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
   },
@@ -30,6 +26,30 @@ const routes: Routes = [
   {
     path: 'history',
     loadChildren: () => import('./history/history.module').then( m => m.HistoryPageModule)
+  },
+  {
+    path: 'sign-up',
+    loadChildren: () => import('./sign-up/sign-up.module').then( m => m.SignUpPageModule)
+  },
+  {
+    path: 'account',
+    loadChildren: () => import('./account/account.module').then( m => m.AccountPageModule)
+  },
+  {
+    path: 'course-ongoing',
+    loadChildren: () => import('./course-ongoing/course-ongoing.module').then( m => m.CourseOngoingPageModule)
+  },
+  {
+    path: 'course-confirmation',
+    loadChildren: () => import('./course-confirmation/course-confirmation.module').then( m => m.CourseConfirmationPageModule)
+  },
+  {
+    path: 'maps',
+    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+  },
+  {
+    path: 'client-home',
+    loadChildren: () => import('./client-home/client-home.module').then( m => m.ClientHomePageModule)
   }
 
   
