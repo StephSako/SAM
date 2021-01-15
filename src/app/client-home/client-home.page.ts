@@ -8,7 +8,8 @@ import { AuthService } from '../services/auth.service';
 import { Appearance } from '@angular-material-extensions/google-maps-autocomplete';
 import { DriverData } from '../tab1/driver-data.model';
 import PlaceResult = google.maps.places.PlaceResult;
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
+import * as _ from 'lodash';
 
 const { Toast, Geolocation } = Capacitor.Plugins;
 
@@ -93,7 +94,18 @@ export class ClientHomePage implements OnInit {
   }
 
   redirect() {
-    this.router.navigate(['/search-place']);
+    let lowest = Number.POSITIVE_INFINITY;
+    let tmpDriver;
+    this.drivers.forEach((driver) => {
+      let tmpTime = driver.distance_client_time;
+
+      if(driver.distance_client_time < lowest) {
+        lowest = tmpTime;
+        tmpDriver = driver;
+      }
+    })
+    let naviguationExtras: NavigationExtras = {state: {driver: tmpDriver}}
+    this.router.navigate(['/search-place'], naviguationExtras);
   }
 
   async displayLoader() {

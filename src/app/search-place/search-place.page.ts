@@ -1,11 +1,12 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Location, Appearance, GermanAddress } from '@angular-material-extensions/google-maps-autocomplete';
 import PlaceResult = google.maps.places.PlaceResult;
-import { NavigationExtras, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Observable, of, from as fromPromise } from 'rxjs';
 import { tap, map, switchMap } from 'rxjs/operators';
 import { Capacitor, Plugins, GeolocationPosition } from '@capacitor/core';
 import { LoadingController, AlertController } from '@ionic/angular';
+import { DriverData } from '../tab1/driver-data.model';
 
 @Component({
   selector: 'app-search-place',
@@ -20,11 +21,21 @@ export class SearchPlacePage implements OnInit {
   public lon;
   public bounds;
   public map: google.maps.Map;
+  private driver: DriverData;
 
   public coordinates: Observable<GeolocationPosition>;
   @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef
 
-  constructor(private router:Router, public loading: LoadingController, public alertCtrl: AlertController) { }
+  constructor(private router:Router, 
+    public loading: LoadingController, 
+    public alertCtrl: AlertController,
+    private route: ActivatedRoute) {
+      this.route.queryParams.subscribe(params => {
+        if(this.router.getCurrentNavigation().extras.state) {
+          this.driver = this.router.getCurrentNavigation().extras.state.driver;
+        }
+      })
+    }
 
   ngOnInit() {
         /**/
@@ -115,7 +126,7 @@ export class SearchPlacePage implements OnInit {
     console.log('onLocationSelected: ', location);
     this.latitude = location.latitude;
     this.longitude = location.longitude;
-    let naviguationExtras: NavigationExtras = {state: {lat: this.latitude, lon: this.longitude}}
+    let naviguationExtras: NavigationExtras = {state: {lat: this.latitude, lon: this.longitude, driver: this.driver}}
     this.router.navigate(['/course-ongoing'], naviguationExtras);
   }
 }

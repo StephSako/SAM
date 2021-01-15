@@ -4,6 +4,7 @@ import { Observable, of, from as fromPromise } from 'rxjs';
 import { tap, map, switchMap } from 'rxjs/operators';
 import { LoadingController, AlertController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DriverData } from '../tab1/driver-data.model';
 
 const { Toast, Geolocation } = Capacitor.Plugins;
 
@@ -23,6 +24,7 @@ export class CourseOngoingPage implements OnInit {
   private directionService;
   public map: google.maps.Map;
   private markers = new Array();
+  private driver: DriverData
 
   public coordinates: Observable<GeolocationPosition>;
   public defaultPos: {
@@ -40,9 +42,11 @@ export class CourseOngoingPage implements OnInit {
         if(this.router.getCurrentNavigation().extras.state) {
           this.lon = this.router.getCurrentNavigation().extras.state.lon;
           this.lat = this.router.getCurrentNavigation().extras.state.lat;
+          this.driver = this.router.getCurrentNavigation().extras.state.driver;
           console.log("LOCATION")
           console.log(this.lat);
           console.log(this.lon);
+          console.log(this.driver);
         }
       })
       this.directionService = new google.maps.DirectionsService();
