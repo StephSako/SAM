@@ -188,6 +188,7 @@ export class CourseOngoingPage implements OnInit {
 
   callbackDistance(response, status) {
     if (status == 'OK') {
+      console.log(response);
       var origins = response.originAddresses;
       var destinations = response.destinationAddresses;
   

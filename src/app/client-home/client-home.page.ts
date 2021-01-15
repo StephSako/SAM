@@ -34,6 +34,7 @@ export class ClientHomePage implements OnInit {
   public selectedAddress: PlaceResult;
   public map: google.maps.Map
   private drivers: DriverData[];
+  private count = 0;
 
   public lat;
   public lon;
@@ -64,7 +65,10 @@ export class ClientHomePage implements OnInit {
             this.lat = position.coords.latitude;
             this.lon = position.coords.longitude;
             this.initMap();
-            this.placeDriverMarker();
+            this.computeClientDistance().then(() => {
+              this.placeDriverMarker();
+            })
+
             return position;
           })
           // if error
@@ -130,14 +134,62 @@ export class ClientHomePage implements OnInit {
     return POSITION;
   }
 
+  computeClientDistance() {
+    return new Promise((resolve, reject) => {
+      this.drivers.forEach(driver => {
+        let start = new google.maps.LatLng(driver.latitude_pos, driver.longitude_pos)
+        let end = new google.maps.LatLng(this.lat, this.lon)
+        if((driver.latitude_pos) && (driver.longitude_pos))  {
+          new google.maps.DistanceMatrixService().getDistanceMatrix({
+            origins: [start],
+            destinations: [end],
+            travelMode: google.maps.TravelMode.DRIVING
+          },(response, status) => {
+            if(status == 'OK') {
+              this.count++;
+              console.log(this.count);
+              var origins = response.originAddresses;
+              var destinations = response.destinationAddresses;
+              console.log(response);
+              for (var i = 0; i < origins.length; i++) {
+                var results = response.rows[i].elements;
+                for (var j = 0; j < results.length; j++) {
+                  var element = results[j];
+                  //console.log(element);
+                  var distance = element.distance.text;
+                  driver.distance_client_km = distance;
+                  //console.log(distance);
+                  
+                  var duration = element.duration.value;
+                  driver.distance_client_time = +duration;
+                  console.log(duration);
+                  
+                  var from = origins[i];
+                  //console.log(from);
+                  var to = destinations[j];
+                  //console.log(to);
+                }
+              }
+              if(this.count == 3) {
+                this.count = 0;
+                resolve("ok");
+              }
+            }
+          });
+        }
+      })
+    });
+
+  }
+
   placeDriverMarker() {
-    console.log("drivers");
+    console.log("drivers place");
     console.log(this.drivers);
     this.drivers.forEach(driver => {
       //console.log(driver);
       if ((driver.longitude_pos) && (driver.latitude_pos)) {
         console.log(driver.latitude_pos);
-        let msg = "<b>" + driver.firstname + " " + driver.lastname + " à 3km <br/>"
+        let msg = "<b>" + driver.firstname + " " + driver.lastname + " à " + driver.distance_client_km + " <br/>"
         let info = new google.maps.InfoWindow({
           content: msg
         })
