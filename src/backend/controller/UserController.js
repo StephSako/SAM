@@ -9,10 +9,7 @@ const nodemailer = require('nodemailer');
 const btoa = require('btoa');
 const atob = require('atob');
 
-
 process.env.SECRET_KEY = 'secret'
-
-
 
 // REGISTER
 exports.register = (req, res) => {
@@ -139,6 +136,25 @@ exports.edit = (req, res) => {
         if (err.errors[0].path === "unique_phone_number") res.status(401).send("Le numéro de télephone a déjà été renseigné")
         else if (err.errors[0].path === "unique_email") res.status(401).send("L'adresse email a déjà été renseignée")
         else res.status(401).send("Une erreur est survenue dans la mise à jour du compte")
+    })
+}
+
+// EDIT LOCATION
+exports.editLocation = (req, res) => {
+    const id_user = req.params.id_user;
+
+    User.update({
+        longitude_pos: req.body.longitude,
+        latitude_pos: req.body.latitude
+    }, {
+        where: { id_user: id_user}
+    }).then(() => {
+        res.json({
+            success: true,
+            message: "Location mise à jour"
+        })
+    }).catch(() => {
+        res.status(401).send("Une erreur est survenue dans la mise à jour de la localisation")
     })
 }
 

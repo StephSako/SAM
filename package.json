@@ -33,6 +33,7 @@
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic/angular": "^5.0.0",
     "@types/google-maps": "^3.2.2",
+    "atob": "^2.1.2",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "btoa": "^1.2.1",
