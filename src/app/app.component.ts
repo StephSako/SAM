@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { UserInterface } from './interfaces/userInterface';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -10,14 +12,16 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
   styleUrls: ['app.component.scss']
 })
 export class AppComponent {
-  
+  user: UserInterface;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
     this.initializeApp();
+    this.user = this.authService.getUserDetails();
     console.log(sessionStorage.getItem('connected'))
   }
 
@@ -30,13 +34,13 @@ export class AppComponent {
     this.router.navigate(['/client-home'])
   }
   goToDriverHome() {
-    console.log("Redirection vers l'accueil chauffeur")
+    this.router.navigate(['/mapdriver'])
   }
   goToAccount() {
     this.router.navigate(['/account'])
   }
   goToHistory() {
-    console.log("Redirection vers l'historique des courses")
+    this.router.navigate(['/history'])
   }
   goToParams() {
     console.log("Redirection vers les paramètres ?")

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { UserInfoInterface, UserInterface } from '../Interfaces/UserInterface';
+import { UserInfoInterface, UserInterface } from '../interfaces/userInterface';
 import { AuthService } from '../services/auth.service';
 
 @Component({

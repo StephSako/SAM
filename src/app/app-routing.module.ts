@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { CourseOngoingPage } from './course-ongoing/course-ongoing.page';
 
 const routes: Routes = [
   
@@ -50,7 +51,12 @@ const routes: Routes = [
   {
     path: 'client-home',
     loadChildren: () => import('./client-home/client-home.module').then( m => m.ClientHomePageModule)
+  },
+  {
+    path: 'search-place',
+    loadChildren: () => import('./search-place/search-place.module').then( m => m.SearchPlacePageModule)
   }
+
 
   
 ];

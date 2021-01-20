@@ -1,36 +1,33 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Capacitor, Plugins, GeolocationPosition } from '@capacitor/core';
+import { Location, Appearance, GermanAddress } from '@angular-material-extensions/google-maps-autocomplete';
+import PlaceResult = google.maps.places.PlaceResult;
+import { NavigationExtras, Router } from '@angular/router';
 import { Observable, of, from as fromPromise } from 'rxjs';
 import { tap, map, switchMap } from 'rxjs/operators';
+import { Capacitor, Plugins, GeolocationPosition } from '@capacitor/core';
 import { LoadingController, AlertController } from '@ionic/angular';
 
-const { Toast, Geolocation } = Capacitor.Plugins;
-
 @Component({
-  selector: 'app-client-map',
-  templateUrl: './client-map.page.html',
-  styleUrls: ['./client-map.page.scss'],
+  selector: 'app-search-place',
+  templateUrl: './search-place.page.html',
+  styleUrls: ['./search-place.page.scss'],
 })
-export class ClientMapPage implements OnInit {
+export class SearchPlacePage implements OnInit {
 
+  private latitude;
+  private longitude;
   public lat;
   public lon;
   public bounds;
   public map: google.maps.Map;
-  distance: number = -1;
-  time: number = -1;
 
   public coordinates: Observable<GeolocationPosition>;
   @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef
-  public defaultPos: {
-    lattitude: 45,
-    longitude: 9
-  };
 
-  constructor(public loading: LoadingController, public alertCtrl: AlertController) { }
+  constructor(private router:Router, public loading: LoadingController, public alertCtrl: AlertController) { }
 
   ngOnInit() {
-    /**/
+        /**/
     // start the loader
     this.displayLoader()
       .then((loader: any) => {
@@ -51,12 +48,6 @@ export class ClientMapPage implements OnInit {
             return null;
           });
       });
-      /**
-      this.getCurrentLocation();
-      /**/
-      //GET DISTANCE AND TIME
-      this.distance = 280;
-      this.time = 3;
   }
 
   async displayLoader() {
@@ -103,7 +94,7 @@ export class ClientMapPage implements OnInit {
       lng: this.lon
     }
     this.map = new google.maps.Map(
-      document.getElementById("mapclient"),
+      document.getElementById("mapsearch"),
       {
         zoom: 12,
         center: POSITION || { lat: 22, lng: 22 },
@@ -112,8 +103,19 @@ export class ClientMapPage implements OnInit {
         disableDefaultUI: true,
       }
     );
-    const footer = document.getElementById("footerclient");
-    this.map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(footer);
+    const autocomplete = document.getElementById("autocomplete");
+    this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(autocomplete);
   }
 
+  onAutocompleteSelected(result: PlaceResult) {
+    console.log('onAutocompleteSelected: ', result);
+  }
+
+  onLocationSelected(location: Location) {
+    console.log('onLocationSelected: ', location);
+    this.latitude = location.latitude;
+    this.longitude = location.longitude;
+    let naviguationExtras: NavigationExtras = {state: {lat: this.latitude, lon: this.longitude}}
+    this.router.navigate(['/course-ongoing'], naviguationExtras);
+  }
 }

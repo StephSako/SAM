@@ -10,6 +10,7 @@ import { ClientHomePage } from './client-home.page';
 
 import { SharedModule } from '../shared/shared.module';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 
 @NgModule({
   imports: [
@@ -17,6 +18,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     FormsModule,
     IonicModule,
     ClientHomePageRoutingModule,
+    ExploreContainerComponentModule,
     SharedModule
   ],
   declarations: [ClientHomePage],

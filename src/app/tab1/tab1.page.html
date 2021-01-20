@@ -8,11 +8,11 @@
   </ion-toolbar>
   <mat-form-field>
     <mat-label>Address</mat-label>
-    <input matInput
+    <input id="autocomplete" matInput
            matGoogleMapsAutocomplete
            [country]="de"
            (onAutocompleteSelected)="onAutocompleteSelected($event)"
-           (onLocationSelected)="onLocationSelected($event)">
+           (onLocationSelected)="onLocationSelected($event)"/>
   </mat-form-field>
 </ion-header>
 
