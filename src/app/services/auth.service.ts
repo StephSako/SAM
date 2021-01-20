@@ -26,6 +26,10 @@ export class AuthService {
     );
   }
 
+  public uploadProfilePic(formData, userId: number): Observable<any> {
+    return this.http.post(this.baseURL + 'profile_pic/upload/' + userId, formData);
+  }
+
   public login(user: TokenPayloadLogin): Observable<any> {
     const URL = this.http.post(this.baseURL + 'login', user);
 

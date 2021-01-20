@@ -4,8 +4,14 @@
       <ion-img src="https://i.imgur.com/qLlUOTD.png" style="height:300px"></ion-img>
     </div>
     <br>
-    <form [formGroup]="signUp" (ngSubmit)="onSignup()">
-      <ion-button color="light" expand="block" shape="round">Photo</ion-button >
+    <form [formGroup]="signUp" (ngSubmit)="onSignup()" style="text-align: center">
+      <img *ngIf="profilePic" [src]="urlProfilePic" alt="image de profil">
+      <p style="color: black" *ngIf="profilePic">{{profilePic.name}}</p>
+      <input
+              style="display: none"
+              type="file" (change)="onFileChanged($event)"
+              #fileInput accept="image/png, image/jpeg">
+      <ion-button color="light" expand="block" shape="round" (click)="fileInput.click()">Image de profil</ion-button>
         <br>
         <mat-error *ngIf="(signUp.controls.firstname.hasError('required') || signUp.controls.firstname.hasError('whitespace')) && signUp.controls.firstname.touched">
           Le champ prénom est requis
@@ -50,7 +56,6 @@
         </mat-error>
         <ion-item color="light" expand="block" shape="round" fill="outline">
           <ion-input [(ngModel)]="credentials.password_user" color="dark" type="password" name="password" placeholder="Mot de passe" formControlName="password"></ion-input >
-
 
           </ion-item >
         <br>

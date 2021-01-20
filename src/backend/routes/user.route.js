@@ -1,9 +1,16 @@
 var express  = require("express");
 const user = require("../controller/UserController");
 var router = express.Router();
+const multipart = require('connect-multiparty');
+const multipartMiddleware = multipart({
+    uploadDir: './src/assets/uploads'
+});
 
 //Register route
 router.post("/register", user.register);
+
+// Add profile pic
+router.post('/profile_pic/upload/:userId', multipartMiddleware, user.uploadProfilePic);
 
 //Login route
 router.post("/login", user.login);

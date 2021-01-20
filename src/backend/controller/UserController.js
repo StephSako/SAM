@@ -1,13 +1,9 @@
-const express = require('express')
-const user = express.Router()
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
 const User = require("../model/User")
 const Role = require("../model/Role")
 const { Op } = require("sequelize");
-const nodemailer = require('nodemailer');
-const btoa = require('btoa');
-const atob = require('atob');
+const fs = require('fs');
 
 process.env.SECRET_KEY = 'secret'
 
@@ -31,6 +27,20 @@ exports.register = (req, res) => {
         else if (err.errors[0].path === "unique_email") res.status(401).send("L'adresse email est déjà lié un compte existant")
         else res.status(401).send("Une erreur est survenue dans la mise à jour du compte")
     })
+}
+
+// UPLOAD PROFILE PIC WITH A GIVEN MAIL ADDRESS
+exports.uploadProfilePic = (req, res) => {
+    let tmp_path = req.files.profilePic.path;
+    let extension = req.files.profilePic.type.split('/')[1]
+    let target_path = 'src\\assets\\uploads\\' + req.params.userId + '.' + extension;
+    fs.rename(tmp_path, target_path, function(err) {
+        if (err) throw err;
+        fs.unlink(tmp_path, function() {
+            if (err) throw err;
+            res.send('Image uploaded successfully to: ' + target_path);
+        });
+    });
 }
 
 // LOGIN

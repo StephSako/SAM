@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {Validators, FormBuilder, FormGroup, AbstractControl, FormControl, NgForm } from '@angular/forms';
-import { TokenPayloadRegister } from '../Interfaces/UserInterface';
+import { Validators, FormBuilder, FormGroup, AbstractControl, FormControl } from '@angular/forms';
+import { TokenPayloadRegister } from '../interfaces/userInterface';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -12,6 +12,8 @@ export class SignUpPage implements OnInit {
 
    signUp: FormGroup;
    spinnerShown: boolean;
+   profilePic: File = null;
+   urlProfilePic;
 
    credentials: TokenPayloadRegister = {
     firstname_user: null,
@@ -30,7 +32,7 @@ export class SignUpPage implements OnInit {
       phone: ['', [this.phoneNumberValidator]],
       password: ['', [Validators.required, this.noWhitespaceValidator]],
       confirmPassword: ['', [this.passwordMatchValidator]]
-    })
+    });
   }
 
   ngOnInit() {
@@ -38,16 +40,18 @@ export class SignUpPage implements OnInit {
 
   onSignup() {
     this.spinnerShown = true;
-    console.log(this.signUp.value);
     this.authService.register(this.credentials)
     .subscribe((data: any) => {
       this.spinnerShown = false;
-      console.log(data)
-    }),
-    err => {
+      const uploadData = new FormData();
+      uploadData.append('profilePic', this.profilePic, this.profilePic.name);
+      this.authService.uploadProfilePic(uploadData, this.authService.getUserDetails().id_user)
+          .subscribe(() => {});
+
+    }), () => {
       this.spinnerShown = false;
       console.log("err");
-    }
+    };
   }
 
   noWhitespaceValidator(control: FormControl) {
@@ -74,9 +78,18 @@ export class SignUpPage implements OnInit {
 
   phoneNumberValidator(control: FormControl) {
     if(!(/^(?:(?:\+|00)33[\s.-]{0,3}(?:\(0\)[\s.-]{0,3})?|0)[1-9](?:(?:[\s.-]?\d{2}){4}|\d{2}(?:[\s.-]?\d{3}){2})$/.test(control.value))) {
-      return {'phone_invalid': true}
+      return {'phone_invalid': true};
     } else {
       return null;
     }
+  }
+
+  onFileChanged(event) {
+    this.profilePic = event.target.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(event.target.files[0]);
+    reader.onload = (_event) => { this.urlProfilePic = reader.result; }
+    const formData = new FormData();
+    formData.append('upload', event.target.files[0], event.target.files[0].name);
   }
 }
