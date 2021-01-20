@@ -3,14 +3,25 @@ ion-content {
 }
 
 mat-form-field {
-    width: 100%;
-  }
-  
-  ion-item {
-    border-radius: 20px;
-    margin: 5px;
-  }
+  width: 100%;
+}
 
-  mat-error {
-    margin: 10px;
-  }
+ion-item {
+  border-radius: 20px;
+  margin: 2px;
+}
+
+mat-error {
+  margin: 10px;
+}
+
+.profile_picture {
+  width:250px;
+  height:250px;
+  object-fit:cover;
+  border-radius: 50%
+}
+
+.btn_profile_picture {
+  margin-bottom: 20px;
+}

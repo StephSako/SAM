@@ -14,6 +14,7 @@ export class AccountPage implements OnInit {
 
   user: UserInterface;
   urlProfilePic: SafeResourceUrl;
+  profilePic: File = null;
 
   formGroup = new FormGroup({
     firstNameForm: new FormControl('', [Validators.required, this.noWhitespaceValidator]),
@@ -41,35 +42,38 @@ export class AccountPage implements OnInit {
   }
 
   getErrorMessageLastname(): string {
-    if(this.formGroup.controls.lastNameForm.hasError('required')) {
+    if (this.formGroup.controls.lastNameForm.hasError('required')) {
       return 'Le champ Nom est requis';
     }
   }
 
   getErrorMessageEmail(): string {
-    if(this.formGroup.controls.emailForm.hasError('required')) {
+    if (this.formGroup.controls.emailForm.hasError('required')) {
       return 'Le champ Email est requis';
     }
   }
 
   getErrorMessagePassword(): string {
-    if(this.formGroup.controls.passwordForm.hasError('required')) {
+    if (this.formGroup.controls.passwordForm.hasError('required')) {
       return 'Le champ Email est requis';
     }
   }
 
   getErrorMessagePhone(): string {
-    if(this.formGroup.controls.phoneNumberForm.hasError('required')) {
+    if (this.formGroup.controls.phoneNumberForm.hasError('required')) {
       return 'Le champ téléphone est requis';
     }
   }
 
   validate() {
     // RECUPERATION DES FORMS
-    this.authService.editUser(this.user)
-    .subscribe((data: any) => {
-      let snackBarRef = this.snackBar.open(data.message);
-    })
+    this.authService.editUser(this.user).subscribe((data: any) => {
+      const uploadData = new FormData();
+      uploadData.append('profilePic', this.profilePic, (this.profilePic ? this.profilePic.name : ''));
+      this.authService.uploadProfilePic(uploadData, this.authService.getUserDetails().id_user, this.profilePic.name).subscribe(() => {
+        this.snackBar.open('Compte modifié avec succès', 'OK', { duration: 2000, panelClass: null });
+      });
+    });
   }
 
   noWhitespaceValidator(control: FormControl) {
@@ -79,12 +83,12 @@ export class AccountPage implements OnInit {
   }
 
   passwordMatchValidator(control: AbstractControl) {
-    let parent = control.parent;
-    if(parent) {
-      let password = parent.get("password").value;
-      let confirmPassword = control.value;
+    const parent = control.parent;
+    if (parent) {
+      const password = parent.get("password").value;
+      const confirmPassword = control.value;
 
-      if(password != confirmPassword) {
+      if (password != confirmPassword) {
         return { ConfirmPassword: true};
       } else {
         return null;
@@ -95,11 +99,21 @@ export class AccountPage implements OnInit {
   }
 
   phoneNumberValidator(control: FormControl) {
-    if(!(/^(?:(?:\+|00)33[\s.-]{0,3}(?:\(0\)[\s.-]{0,3})?|0)[1-9](?:(?:[\s.-]?\d{2}){4}|\d{2}(?:[\s.-]?\d{3}){2})$/.test(control.value))) {
-      return {'phone_invalid': true}
+    if (!(/^(?:(?:\+|00)33[\s.-]{0,3}(?:\(0\)[\s.-]{0,3})?|0)[1-9](?:(?:[\s.-]?\d{2}){4}|\d{2}(?:[\s.-]?\d{3}){2})$/.test(control.value))) {
+      return {'phone_invalid': true};
     } else {
       return null;
     }
+  }
+
+  onFileChanged(event) {
+    this.profilePic = event.target.files[0];
+    this.user.profile_pic_name = this.profilePic.name;
+    const reader = new FileReader();
+    reader.readAsDataURL(event.target.files[0]);
+    reader.onload = (_event) => this.urlProfilePic = reader.result;
+    const formData = new FormData();
+    formData.append('upload', event.target.files[0], event.target.files[0].name);
   }
 
 }

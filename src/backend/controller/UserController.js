@@ -5,6 +5,7 @@ const Role = require("../model/Role")
 const { Op } = require("sequelize");
 const path = require('path');
 const fs = require('fs');
+const glob = require("glob")
 
 process.env.SECRET_KEY = 'secret'
 
@@ -32,14 +33,31 @@ exports.register = (req, res) => {
 
 // UPLOAD PROFILE PIC WITH A GIVEN USER ID
 exports.uploadProfilePic = (req, res) => {
-    let target_path = path.join(__dirname, 'uploads', req.params.userId + '_' + req.params.profile_pic_name);
-    fs.rename(req.files.profilePic.path, target_path, function(err) {
-        if (err) throw err;
-        fs.unlink(req.files.profilePic.path, function() {
-            if (err) throw err;
-            res.status(200).json({message: 'Image uploaded successfully to: ' + target_path });
-        });
-    });
+    User.findOne({
+        where: {
+            id_user: req.params.userId
+        }
+    }).then(user => {
+        // On supprime l'image de profil précédente
+        if (user.profile_pic_name !== null){
+            glob(path.join(__dirname, 'uploads', user.id_user + '_*'), function (er, files) {
+                for (const file of files) {
+                    fs.unlink(file, (err) => { if (err) throw err })
+                }
+
+                let target_path = path.join(__dirname, 'uploads', req.params.userId + '_' + req.params.profile_pic_name)
+                fs.rename(req.files.profilePic.path, target_path, function(err) {
+                    if (err) throw err
+                    fs.unlink(req.files.profilePic.path, function() {
+                        if (err) throw err;
+                        res.status(200).json({message: 'Image uploaded successfully to: ' + target_path });
+                    })
+                })
+            })
+        }
+    }).catch(err => {
+        res.status(500).send(err)
+    })
 }
 
 // GET PROFILE PIC WITH A GIVEN USER ID
@@ -47,8 +65,7 @@ exports.downloadProfilePic = (req, res) => {
     User.findOne({
         where: {
             id_user: req.params.userId
-        },
-        include: [Role]
+        }
     }).then(user => {
         if (user.profile_pic_name){
             const imageName = req.params.userId + '_' + user.profile_pic_name
@@ -136,6 +153,10 @@ exports.edit = (req, res) => {
     }).then(num => {
 
         if (num =! 0) {
+
+            // TODO DELETE PROFILE PICTURE
+
+
             User.findOne({
                 where: {
                     id_user: id_user

@@ -47,11 +47,10 @@ export class SignUpPage implements OnInit {
 
       const uploadData = new FormData();
       uploadData.append('profilePic', this.profilePic, (this.profilePic ? this.profilePic.name : ''));
-      this.authService.uploadProfilePic(uploadData, this.authService.getUserDetails().id_user, this.profilePic.name)
-          .subscribe(() => {});
-    }, err => {
-      this.spinnerShown = false;
-      console.log(err);
+      this.authService.uploadProfilePic(uploadData, this.authService.getUserDetails().id_user, this.profilePic.name).subscribe(() => {});
+      }, err => {
+        this.spinnerShown = false;
+        console.log(err);
     });
   }
 
@@ -88,12 +87,9 @@ export class SignUpPage implements OnInit {
   onFileChanged(event) {
     this.profilePic = event.target.files[0];
     this.credentials.profile_pic_name = this.profilePic.name;
-    console.log(this.credentials);
     const reader = new FileReader();
     reader.readAsDataURL(event.target.files[0]);
-    reader.onload = (_event) => {
-        this.urlProfilePic = reader.result;
-    };
+    reader.onload = (_event) => this.urlProfilePic = reader.result;
     const formData = new FormData();
     formData.append('upload', event.target.files[0], event.target.files[0].name);
   }
