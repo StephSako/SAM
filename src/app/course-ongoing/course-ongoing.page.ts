@@ -5,6 +5,9 @@ import { tap, map, switchMap } from 'rxjs/operators';
 import { LoadingController, AlertController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DriverData } from '../tab1/driver-data.model';
+import { Socket } from 'ngx-socket-io';
+import { UserInterface } from '../interfaces/userInterface';
+import { AuthService } from '../services/auth.service';
 
 const { Toast, Geolocation } = Capacitor.Plugins;
 
@@ -24,7 +27,10 @@ export class CourseOngoingPage implements OnInit {
   private directionService;
   public map: google.maps.Map;
   private markers = new Array();
-  private driver: DriverData
+  private driver: DriverData;
+  address: string;
+  clientAddress: string;
+  private client: UserInterface;
 
   public coordinates: Observable<GeolocationPosition>;
   public defaultPos: {
@@ -37,16 +43,23 @@ export class CourseOngoingPage implements OnInit {
   constructor(public loading: LoadingController,
     public alertCtrl: AlertController,
     private route: ActivatedRoute,
-    private router: Router) {
+    private router: Router,
+    private socket: Socket,
+    private authService: AuthService,
+    public alertController: AlertController) {
+      this.client = this.authService.getUserDetails();
       this.route.queryParams.subscribe(params => {
         if(this.router.getCurrentNavigation().extras.state) {
           this.lon = this.router.getCurrentNavigation().extras.state.lon;
           this.lat = this.router.getCurrentNavigation().extras.state.lat;
           this.driver = this.router.getCurrentNavigation().extras.state.driver;
+          this.address = this.router.getCurrentNavigation().extras.state.address;
+          this.clientAddress = this.router.getCurrentNavigation().extras.state.clientAddress
           console.log("LOCATION")
           console.log(this.lat);
           console.log(this.lon);
           console.log(this.driver);
+          this.socket.emit("newCourse", this.driver, this.address, this.clientAddress, this.client);
         }
       })
       this.directionService = new google.maps.DirectionsService();

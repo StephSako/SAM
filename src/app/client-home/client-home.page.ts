@@ -36,6 +36,7 @@ export class ClientHomePage implements OnInit {
   public map: google.maps.Map
   private drivers: DriverData[];
   private count = 0;
+  clientAddress: string;
 
   public lat;
   public lon;
@@ -65,6 +66,7 @@ export class ClientHomePage implements OnInit {
             loader.dismiss();
             this.lat = position.coords.latitude;
             this.lon = position.coords.longitude;
+            console.log(position);
             this.initMap();
             this.computeClientDistance().then(() => {
               this.placeDriverMarker();
@@ -104,7 +106,7 @@ export class ClientHomePage implements OnInit {
         tmpDriver = driver;
       }
     })
-    let naviguationExtras: NavigationExtras = {state: {driver: tmpDriver}}
+    let naviguationExtras: NavigationExtras = {state: {driver: tmpDriver, clientAddress: this.clientAddress}}
     this.router.navigate(['/search-place'], naviguationExtras);
   }
 
@@ -159,30 +161,25 @@ export class ClientHomePage implements OnInit {
           },(response, status) => {
             if(status == 'OK') {
               this.count++;
-              console.log(this.count);
               var origins = response.originAddresses;
               var destinations = response.destinationAddresses;
-              console.log(response);
+              this.clientAddress = response.destinationAddresses[0]
               for (var i = 0; i < origins.length; i++) {
                 var results = response.rows[i].elements;
                 for (var j = 0; j < results.length; j++) {
                   var element = results[j];
-                  //console.log(element);
+
                   var distance = element.distance.text;
                   driver.distance_client_km = distance;
-                  //console.log(distance);
                   
                   var duration = element.duration.value;
                   driver.distance_client_time = +duration;
-                  console.log(duration);
                   
                   var from = origins[i];
-                  //console.log(from);
                   var to = destinations[j];
-                  //console.log(to);
                 }
               }
-              if(this.count == 3) {
+              if(this.count == 4) {
                 this.count = 0;
                 resolve("ok");
               }
@@ -195,12 +192,8 @@ export class ClientHomePage implements OnInit {
   }
 
   placeDriverMarker() {
-    console.log("drivers place");
-    console.log(this.drivers);
     this.drivers.forEach(driver => {
-      //console.log(driver);
       if ((driver.longitude_pos) && (driver.latitude_pos)) {
-        console.log(driver.latitude_pos);
         let msg = "<b>" + driver.firstname + " " + driver.lastname + " à " + driver.distance_client_km + " <br/>"
         let info = new google.maps.InfoWindow({
           content: msg

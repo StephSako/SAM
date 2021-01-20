@@ -22,6 +22,7 @@ export class SearchPlacePage implements OnInit {
   public bounds;
   public map: google.maps.Map;
   private driver: DriverData;
+  private clientAdress : string;
 
   public coordinates: Observable<GeolocationPosition>;
   @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef
@@ -33,6 +34,7 @@ export class SearchPlacePage implements OnInit {
       this.route.queryParams.subscribe(params => {
         if(this.router.getCurrentNavigation().extras.state) {
           this.driver = this.router.getCurrentNavigation().extras.state.driver;
+          this.clientAdress = this.router.getCurrentNavigation().extras.state.clientAddress;
         }
       })
     }
@@ -47,6 +49,7 @@ export class SearchPlacePage implements OnInit {
           .then(position => {
             //close loader and return position
             loader.dismiss();
+            console.log(position);
             this.lat = position.coords.latitude;
             this.lon = position.coords.longitude;
             this.initMap();
@@ -120,13 +123,26 @@ export class SearchPlacePage implements OnInit {
 
   onAutocompleteSelected(result: PlaceResult) {
     console.log('onAutocompleteSelected: ', result);
+    this.latitude = result.geometry.location.lat();
+    this.longitude = result.geometry.location.lng();
+    console.log(this.latitude);
+    console.log(this.longitude);
+
+    let naviguationExtras: NavigationExtras = {
+      state: {
+        lat: this.latitude, 
+        lon: this.longitude, 
+        driver: this.driver, 
+        address: result.formatted_address,
+        clientAddress: this.clientAdress
+      }
+    }
+    this.router.navigate(['/course-ongoing'], naviguationExtras);
   }
 
   onLocationSelected(location: Location) {
-    console.log('onLocationSelected: ', location);
-    this.latitude = location.latitude;
-    this.longitude = location.longitude;
-    let naviguationExtras: NavigationExtras = {state: {lat: this.latitude, lon: this.longitude, driver: this.driver}}
-    this.router.navigate(['/course-ongoing'], naviguationExtras);
+    //console.log('onLocationSelected: ', location);
+
+
   }
 }

@@ -40,14 +40,25 @@ export class DriverMapPage implements OnInit {
     private authService: AuthService) {
       this.driver = this.authService.getUserDetails();
       this.isOnline = false;
-      this.isLoading = false;
+      this.isLoading = true;
+      socket.emit("isConnected", this.driver);
 
-      //Listen on server response for driver connection
+      //Listen on server response for driver connection status
       socket.fromEvent('driverConnected').subscribe(data => {
         this.isLoading = false;
         this.isOnline = true;
-      })
+      });
 
+      socket.fromEvent('driverDisconnected').subscribe(data => {
+        this.isLoading = false;
+        this.isOnline = false;
+      });
+
+      socket.fromEvent('driverCourse').subscribe(data => {
+        console.log(data)
+        this.launchAlert(data);
+
+      });
     }
 
   ngOnInit() {
@@ -79,6 +90,15 @@ export class DriverMapPage implements OnInit {
     //GET DISTANCE AND TIME
     this.distance = 280;
     this.time = 3;
+  }
+
+  async launchAlert(data) {
+    const alert = await this.alertCtrl.create({
+      header: 'Nouvelle course',
+      message: 'Nouvelle course trouvé pour <b>' + data.client.firstname + ' ' + data.client.lastname + '</b><br/> <b>Emplacement :</b> ' + data.clientAddress + '<br/>' + '<b>Destination : </b>' + data.address
+    })
+
+    await alert.present();
   }
 
   //Tell the server new driver is connected
