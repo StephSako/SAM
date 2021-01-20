@@ -15,11 +15,16 @@ import { HttpClientModule } from '@angular/common/http';
 import {AgmCoreModule} from '@agm/core';
 import {MatGoogleMapsAutocompleteModule} from '@angular-material-extensions/google-maps-autocomplete';
 
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+
+const config: SocketIoConfig = { url: 'http://localhost:4000', options: {withCredentials: false} };
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
   imports: [
     BrowserModule,
+    SocketIoModule.forRoot(config),
     IonicModule.forRoot(),
     AppRoutingModule,
         AgmCoreModule.forRoot({
