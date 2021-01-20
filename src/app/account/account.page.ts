@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { UserInfoInterface, UserInterface } from '../interfaces/userInterface';
+import { UserInterface } from '../interfaces/userInterface';
 import { AuthService } from '../services/auth.service';
+import {SafeResourceUrl} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-account',
@@ -12,6 +13,7 @@ import { AuthService } from '../services/auth.service';
 export class AccountPage implements OnInit {
 
   user: UserInterface;
+  urlProfilePic: SafeResourceUrl;
 
   formGroup = new FormGroup({
     firstNameForm: new FormControl('', [Validators.required, this.noWhitespaceValidator]),
@@ -20,13 +22,12 @@ export class AccountPage implements OnInit {
     phoneNumberForm: new FormControl('', [Validators.required, this.noWhitespaceValidator, this.phoneNumberValidator])
   });
 
-  constructor(public authService: AuthService, private snackBar: MatSnackBar) { 
-    
-  }
+  constructor(public authService: AuthService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.user = this.authService.getUserDetails();
-    console.log(this.user);
+    this.authService.downloadProfilePic(this.user.id_user).subscribe(urlProfilePic => this.urlProfilePic = urlProfilePic
+        , err => console.log('ERREUR', err));
     this.formGroup.controls.firstNameForm.setValue(this.user.firstname);
     this.formGroup.controls.lastNameForm.setValue(this.user.lastname);
     this.formGroup.controls.emailForm.setValue(this.user.email);
@@ -34,7 +35,7 @@ export class AccountPage implements OnInit {
   }
 
   getErrorMessageFirstname(): string {
-    if(this.formGroup.controls.firstNameForm.hasError('required')) {
+    if (this.formGroup.controls.firstNameForm.hasError('required')) {
       return 'Le champ Prénom est requis';
     }
   }
@@ -64,8 +65,7 @@ export class AccountPage implements OnInit {
   }
 
   validate() {
-    //RECUPERATION DES FORMS
-    console.log(this.user);
+    // RECUPERATION DES FORMS
     this.authService.editUser(this.user)
     .subscribe((data: any) => {
       let snackBarRef = this.snackBar.open(data.message);

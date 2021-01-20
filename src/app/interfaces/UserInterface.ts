@@ -9,6 +9,7 @@ export interface UserInterface {
     role_user_id: number;
     email: string;
     phone_number: string;
+    profile_pic_name: string;
     exp: number;
     iat: number;
   }
@@ -32,14 +33,5 @@ export interface UserInterface {
     role_user_id: number;
     password_user?: string;
     phone_number_user: string;
-  }
-  
-  export interface UserInfoInterface {
-    id: number;
-    role: RoleUserInterface;
-    firstname: string;
-    lastname: string;
-    email: string;
-    phone_number: string;
-    role_user_id: number;
+    profile_pic_name: string;
   }

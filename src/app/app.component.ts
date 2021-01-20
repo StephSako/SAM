@@ -18,7 +18,7 @@ export class AppComponent {
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private router: Router,
-    private authService: AuthService
+    public authService: AuthService
   ) {
     this.initializeApp();
     this.user = this.authService.getUserDetails();
@@ -44,10 +44,6 @@ export class AppComponent {
   }
   goToParams() {
     console.log("Redirection vers les paramètres ?")
-  }
-  signOff() {
-    sessionStorage.setItem("connected","false")
-    this.router.navigate(['/'])
   }
 
   initializeApp() {

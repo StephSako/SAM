@@ -3,25 +3,26 @@ const bcrypt = require("bcrypt")
 const User = require("../model/User")
 const Role = require("../model/Role")
 const { Op } = require("sequelize");
+const path = require('path');
 const fs = require('fs');
 
 process.env.SECRET_KEY = 'secret'
 
 // REGISTER
 exports.register = (req, res) => {
-    console.log(req.body);
     const userData = {
         firstname: req.body.firstname_user,
         lastname: req.body.lastname_user,
         password: req.body.password_user,
         phone_number: req.body.phone_number_user,
         role_user_id: req.body.role_user_id,
-        email: req.body.email_user
+        email: req.body.email_user,
+        profile_pic_name: req.body.profile_pic_name
     }
     userData.password = bcrypt.hashSync(userData.password, 12)
     User.create(userData).then(user => {
         let token = jwt.sign(user.dataValues, process.env.SECRET_KEY, { expiresIn: 1440 })
-        res.json({token: token})
+        res.status(200).json({token: token})
     }).catch(err => {
         if (err.errors[0].path === "unique_phone_number") res.status(401).send("Le numéro de télephone est déjà lié un compte existant")
         else if (err.errors[0].path === "unique_email") res.status(401).send("L'adresse email est déjà lié un compte existant")
@@ -29,23 +30,42 @@ exports.register = (req, res) => {
     })
 }
 
-// UPLOAD PROFILE PIC WITH A GIVEN MAIL ADDRESS
+// UPLOAD PROFILE PIC WITH A GIVEN USER ID
 exports.uploadProfilePic = (req, res) => {
-    let tmp_path = req.files.profilePic.path;
-    let extension = req.files.profilePic.type.split('/')[1]
-    let target_path = 'src\\assets\\uploads\\' + req.params.userId + '.' + extension;
-    fs.rename(tmp_path, target_path, function(err) {
+    let target_path = path.join(__dirname, 'uploads', req.params.userId + '_' + req.params.profile_pic_name);
+    fs.rename(req.files.profilePic.path, target_path, function(err) {
         if (err) throw err;
-        fs.unlink(tmp_path, function() {
+        fs.unlink(req.files.profilePic.path, function() {
             if (err) throw err;
-            res.send('Image uploaded successfully to: ' + target_path);
+            res.status(200).json({message: 'Image uploaded successfully to: ' + target_path });
         });
     });
 }
 
+// GET PROFILE PIC WITH A GIVEN USER ID
+exports.downloadProfilePic = (req, res) => {
+    User.findOne({
+        where: {
+            id_user: req.params.userId
+        },
+        include: [Role]
+    }).then(user => {
+        if (user.profile_pic_name){
+            const imageName = req.params.userId + '_' + user.profile_pic_name
+            const imagePath = path.join(__dirname, 'uploads', imageName);
+            fs.exists(imagePath, exists => {
+                if (exists) res.sendFile(imagePath);
+                else res.status(400).send('Error: Image does not exists');
+            });
+        }
+        else res.status(500).send("Cette image de profil est introuvable")
+    }).catch(err => {
+        res.status(500).send(err)
+    })
+}
+
 // LOGIN
 exports.login = (req, res) => {
-    console.log(req.body);
     User.findOne({
         where: {
             [Op.or]: [
@@ -80,7 +100,6 @@ exports.login = (req, res) => {
         }
 
     }).catch(err => {
-        console.log(err);
         res.status(500).send({
             success: false,
             title: "Connexion",

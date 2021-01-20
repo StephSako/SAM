@@ -5,7 +5,7 @@
     </div>
     <br>
     <form [formGroup]="signUp" (ngSubmit)="onSignup()" style="text-align: center">
-      <img *ngIf="profilePic" [src]="urlProfilePic" alt="image de profil">
+      <ion-img *ngIf="profilePic" [src]="urlProfilePic" alt="image de profil"></ion-img>
       <p style="color: black" *ngIf="profilePic">{{profilePic.name}}</p>
       <input
               style="display: none"
