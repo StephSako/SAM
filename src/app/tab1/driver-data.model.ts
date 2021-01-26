@@ -5,4 +5,5 @@ export interface DriverData {
     longitude_pos: number;
     distance_client_time:  number;
     distance_client_km: string;
+    client_time_text: string;
 }

@@ -6,22 +6,23 @@
         <ion-img src="https://i.imgur.com/EMx6uVW.png" style="width:66%;"></ion-img>
       </ion-col>
       <ion-col size="8">
-        <h2 *ngIf="!isOnline">Vous êtes hors ligne </h2>
+        <h2 *ngIf="!isOnline && !courseStarted">Vous êtes hors ligne </h2>
         
-        <h2 *ngIf="isOnline">Vous êtes en ligne </h2>
-        <p *ngIf="isOnline" style="font-size: 20px;">En attente d'un client</p>
+        <h2 *ngIf="isOnline && !courseStarted">Vous êtes en ligne </h2>
+        <p *ngIf="isOnline && !courseStarted" style="font-size: 20px;">En attente d'un client</p>
+        <div innerHTML="{{ instructions }}"></div>
 
         <br>
       </ion-col>
     </ion-row>
   </ion-grid>
-  <ion-list style="text-align:center;" *ngIf="!isOnline && !isLoading">
+  <ion-list style="text-align:center;" *ngIf="!isOnline && !isLoading && !courseStarted">
     <ion-button  style="text-align: center;" size="large" color="secondary" (click)="connectDriver()">Go</ion-button>
   </ion-list>
-  <ion-list style="text-align:center;" *ngIf="isLoading">
+  <ion-list style="text-align:center;" *ngIf="isLoading && !courseStarted">
     <ion-spinner name="crescent" ></ion-spinner>
   </ion-list>
-  <ion-list style="text-align:center;" *ngIf="isOnline && !isLoading">
+  <ion-list style="text-align:center;" *ngIf="isOnline && !isLoading && !courseStarted">
     <ion-button style="text-align: center;" size="large" color="secondary" (click)="disconnectDriver()">Hors ligne</ion-button>
   </ion-list>
 </div>

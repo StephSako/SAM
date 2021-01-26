@@ -6,6 +6,7 @@ import { LoadingController, AlertController } from '@ionic/angular';
 import { Socket } from 'ngx-socket-io';
 import { AuthService } from '../services/auth.service';
 import { UserInterface } from '../interfaces/userInterface';
+import { LatLng } from '@ionic-native/google-maps';
 
 const { Toast, Geolocation } = Capacitor.Plugins;
 
@@ -26,7 +27,20 @@ export class DriverMapPage implements OnInit {
   public map: google.maps.Map;
   private driver: UserInterface;
   isOnline: boolean;
-  isLoading : boolean;
+  isLoading: boolean;
+  private destinationAddress: string;
+  private clientAddress: string;
+  private iconBase: string;
+  private directionService;
+  private driverMarker: google.maps.Marker;
+  private currLat;
+  private currLon;
+  private stepPoints: any[];
+  private clientLat;
+  private clientLon;
+  private geocoder;
+  public courseStarted: boolean;
+  public instructions: string;
 
   @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef
   public defaultPos: {
@@ -38,28 +52,40 @@ export class DriverMapPage implements OnInit {
     public alertCtrl: AlertController,
     private socket: Socket,
     private authService: AuthService) {
-      this.driver = this.authService.getUserDetails();
+      this.instructions = "";
+      this.courseStarted = false;
+    this.geocoder = new google.maps.Geocoder();
+
+    this.stepPoints = [];
+    this.driver = this.authService.getUserDetails();
+
+    this.isOnline = false;
+    this.isLoading = true;
+    this.iconBase = "http://sam.absolumentpc77-informatique.fr/"
+    socket.emit("isConnected", this.driver);
+    this.directionService = new google.maps.DirectionsService();
+
+    //Listen on server response for driver connection status
+    socket.fromEvent('driverConnected').subscribe(data => {
+      this.isLoading = false;
+      this.isOnline = true;
+    });
+
+    socket.fromEvent('driverDisconnected').subscribe(data => {
+      this.isLoading = false;
       this.isOnline = false;
-      this.isLoading = true;
-      socket.emit("isConnected", this.driver);
+    });
 
-      //Listen on server response for driver connection status
-      socket.fromEvent('driverConnected').subscribe(data => {
-        this.isLoading = false;
-        this.isOnline = true;
-      });
+    socket.fromEvent('driverCourse').subscribe((data: any) => {
+      console.log(data)
+      this.clientAddress = data.clientAddress;
+      this.destinationAddress = data.address;
+      this.clientLat = data.lat;
+      this.clientLon = data.lon;
+      this.launchAlert(data);
 
-      socket.fromEvent('driverDisconnected').subscribe(data => {
-        this.isLoading = false;
-        this.isOnline = false;
-      });
-
-      socket.fromEvent('driverCourse').subscribe(data => {
-        console.log(data)
-        this.launchAlert(data);
-
-      });
-    }
+    });
+  }
 
   ngOnInit() {
     /**/
@@ -74,7 +100,17 @@ export class DriverMapPage implements OnInit {
             loader.dismiss();
             this.lat = position.coords.latitude;
             this.lon = position.coords.longitude;
+            console.log(this.lat);
+            console.log(this.lon);
             this.initMap();
+            this.driverMarker = new google.maps.Marker({
+              position: {
+                lat: this.driver.latitude_pos,
+                lng: this.driver.longitude_pos
+              },
+              icon: this.iconBase + "bicycle.png",
+              map: this.map
+            })
             return position;
           })
           // if error
@@ -93,13 +129,193 @@ export class DriverMapPage implements OnInit {
   }
 
   async launchAlert(data) {
+
     const alert = await this.alertCtrl.create({
       header: 'Nouvelle course',
-      message: 'Nouvelle course trouvé pour <b>' + data.client.firstname + ' ' + data.client.lastname + '</b><br/> <b>Emplacement :</b> ' + data.clientAddress + '<br/>' + '<b>Destination : </b>' + data.address
+      message: 'Nouvelle course trouvé pour <b>' +
+        data.client.firstname +
+        ' ' +
+        data.client.lastname +
+        '</b><br/> <b>Emplacement :</b> ' +
+        data.clientAddress + ' (' + data.time_text + ' ) <br/>',
+      buttons: [{
+        text: 'Accepter', handler: () => {
+          this.geocoder.geocode({'address': this.clientAddress}, (results, status) => {
+            if(status == 'OK') {
+              this.courseStarted = true;
+              console.log("GEOCEODE");
+              console.log(results);
+              let start = new google.maps.Marker({
+
+                position: {
+                  lat: this.driver.latitude_pos,
+                  lng: this.driver.longitude_pos
+                },
+                icon: this.iconBase + "green-flag.png",
+                map: this.map
+              });
+    
+              let end = new google.maps.Marker({
+    
+                position: {
+                  lat: results[0].geometry.location.lat(),
+                  lng: results[0].geometry.location.lng()
+                },
+                icon: this.iconBase + "red-flag.png",
+                map: this.map
+              });
+    
+              let directionsRenderer = new google.maps.DirectionsRenderer({
+                preserveViewport: true,
+                suppressMarkers: true,
+                map: this.map
+              });
+              directionsRenderer.setMap(this.map);
+    
+              new google.maps.DistanceMatrixService().getDistanceMatrix({
+                origins: [start.getPosition()],
+                destinations: [this.clientAddress],
+                travelMode: google.maps.TravelMode.BICYCLING,
+                avoidHighways: true,
+                avoidTolls: true
+              }, this.callbackDistance);
+              console.log("client address")
+              console.log(this.clientAddress)
+              const request = {
+                origin: start.getPosition(),
+                destination: this.clientAddress,
+                avoidHighways: true,
+                avoidTolls: true,
+                travelMode: 'BICYCLING'
+              }
+    
+              this.directionService.route(request, (result, status) => {
+                if (status == 'OK') {
+                  
+                  directionsRenderer.setDirections(result);
+                  console.log("DIRECTION SERVICE")
+                  console.log(result);
+                  console.log("leg");
+                  console.log(result.routes[0].legs[0].steps);
+                  let steps = result.routes[0].legs[0].steps;
+                  steps.forEach(step => {
+    
+                    step.path.forEach((pos, index) => {
+                      let obj = [];
+                      obj["distance"] = step.duration.text;
+                      obj["duration"] = step.duration.text;
+                      obj["instructions"] = step.instructions;
+                      obj["latitude"] = pos.lat();
+                      obj["longitude"] = pos.lng();
+                      this.stepPoints.push(obj);
+                      /*setTimeout(() => {
+                        let newLatLng = new google.maps.LatLng(pos.lat(), pos.lng());
+                        this.driverMarker.setPosition(newLatLng);
+                        console.log("TIME OUIT");
+                      }, 1000 * index)*/
+                    });
+    
+                  });
+                  this.moveMarker();
+    
+                  console.log(directionsRenderer.getDirections());
+                }
+              })
+            }
+          })
+
+
+        }
+      }, 'Refuser',]
     })
 
     await alert.present();
   }
+
+  moveMarker() {
+    console.log(this.stepPoints);
+    this.stepPoints.forEach((step, index) => {
+      setTimeout(() => {
+        this.instructions = step.instructions;
+        let newLatLng = new google.maps.LatLng(step.latitude, step.longitude);
+        this.driverMarker.setPosition(newLatLng);
+      }, 300 * index)
+    })
+  }
+
+  acceptCourse() {
+
+    let tmpLat = this.lat;
+    let tmpLon = this.lon;
+    let start = new google.maps.Marker({
+
+      position: {
+        lat: tmpLat,
+        lng: tmpLon
+      },
+      icon: this.iconBase + "green-flag.png",
+      map: this.map
+    });
+
+    let directionsRenderer = new google.maps.DirectionsRenderer({
+      preserveViewport: true,
+      suppressMarkers: true,
+      map: this.map
+    });
+    directionsRenderer.setMap(this.map);
+
+    new google.maps.DistanceMatrixService().getDistanceMatrix({
+      origins: [start.getPosition()],
+      destinations: [this.clientAddress],
+      travelMode: google.maps.TravelMode.BICYCLING,
+      avoidHighways: true,
+      avoidTolls: true
+    }, this.callbackDistance);
+
+    const request = {
+      origin: start.getPosition(),
+      destination: this.clientAddress,
+      avoidHighways: true,
+      avoidTolls: true,
+      travelMode: 'BICYCLING'
+    }
+
+    this.directionService.route(request, (result, status) => {
+      if (status == 'OK') {
+
+        directionsRenderer.setDirections(result);
+        console.log("DIRECTION SERVICE")
+        console.log(result);
+        console.log(directionsRenderer.getDirections());
+      }
+    })
+  }
+
+  callbackDistance(response, status) {
+    if (status == 'OK') {
+      console.log(response);
+      var origins = response.originAddresses;
+      var destinations = response.destinationAddresses;
+
+      for (var i = 0; i < origins.length; i++) {
+        var results = response.rows[i].elements;
+        for (var j = 0; j < results.length; j++) {
+          var element = results[j];
+          console.log(element);
+          var distance = element.distance.text;
+          console.log(distance);
+          var duration = element.duration.text;
+          console.log(duration);
+          var from = origins[i];
+          console.log(from);
+          var to = destinations[j];
+          console.log(to);
+        }
+      }
+    }
+  }
+
+
 
   //Tell the server new driver is connected
   connectDriver() {

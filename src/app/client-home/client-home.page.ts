@@ -160,6 +160,7 @@ export class ClientHomePage implements OnInit {
             travelMode: google.maps.TravelMode.DRIVING
           },(response, status) => {
             if(status == 'OK') {
+              console.log(response);
               this.count++;
               var origins = response.originAddresses;
               var destinations = response.destinationAddresses;
@@ -174,6 +175,8 @@ export class ClientHomePage implements OnInit {
                   
                   var duration = element.duration.value;
                   driver.distance_client_time = +duration;
+
+                  driver.client_time_text = element.duration.text;
                   
                   var from = origins[i];
                   var to = destinations[j];

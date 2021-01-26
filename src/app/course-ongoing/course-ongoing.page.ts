@@ -1,13 +1,14 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Capacitor, Plugins, GeolocationPosition } from '@capacitor/core';
 import { Observable, of, from as fromPromise } from 'rxjs';
-import { tap, map, switchMap } from 'rxjs/operators';
+import { tap, map, switchMap, first } from 'rxjs/operators';
 import { LoadingController, AlertController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DriverData } from '../tab1/driver-data.model';
 import { Socket } from 'ngx-socket-io';
 import { UserInterface } from '../interfaces/userInterface';
 import { AuthService } from '../services/auth.service';
+import { Storage } from '@ionic/storage';
 
 const { Toast, Geolocation } = Capacitor.Plugins;
 
@@ -16,6 +17,9 @@ const { Toast, Geolocation } = Capacitor.Plugins;
   templateUrl: './course-ongoing.page.html',
   styleUrls: ['./course-ongoing.page.scss'],
 })
+
+
+
 export class CourseOngoingPage implements OnInit {
 
   distance: number = -1;
@@ -31,6 +35,9 @@ export class CourseOngoingPage implements OnInit {
   address: string;
   clientAddress: string;
   private client: UserInterface;
+  private iconBase: string;
+  public searching: boolean;
+
 
   public coordinates: Observable<GeolocationPosition>;
   public defaultPos: {
@@ -46,7 +53,10 @@ export class CourseOngoingPage implements OnInit {
     private router: Router,
     private socket: Socket,
     private authService: AuthService,
-    public alertController: AlertController) {
+    public alertController: AlertController,
+    private storage: Storage) {
+      this.searching = true;
+      this.iconBase = "http://bitwarden.absolumentpc77-informatique.fr/"
       this.client = this.authService.getUserDetails();
       this.route.queryParams.subscribe(params => {
         if(this.router.getCurrentNavigation().extras.state) {
@@ -55,14 +65,38 @@ export class CourseOngoingPage implements OnInit {
           this.driver = this.router.getCurrentNavigation().extras.state.driver;
           this.address = this.router.getCurrentNavigation().extras.state.address;
           this.clientAddress = this.router.getCurrentNavigation().extras.state.clientAddress
+          let objSaved = {};
+          objSaved["lon"] = this.lon;
+          objSaved["lat"] = this.lat;
+          objSaved["driver"] = this.driver;
+          objSaved["address"] = this.address;
+          objSaved["clientAddress"] = this.clientAddress;
+          console.log("obj");
+          console.log(objSaved);
+          storage.set("obj", objSaved);
           console.log("LOCATION")
           console.log(this.lat);
           console.log(this.lon);
-          console.log(this.driver);
-          this.socket.emit("newCourse", this.driver, this.address, this.clientAddress, this.client);
+          this.socket.emit("newCourse", this.driver, this.address, this.clientAddress, this.client, this.lat, this.lon);
+        } else {
+          let objj = this.getDataFromStorage();
+          console.log("obj");
+          objj.then((obj) => {
+            console.log(obj);
+            this.lon = obj["lon"];
+            this.lat = obj["lat"];
+            this.driver = obj["driver"];
+            this.address = obj["address"];
+            this.clientAddress = obj["clientAddress"];
+            this.socket.emit("newCourse", this.driver, this.address, this.clientAddress, this.client);
+          })
         }
       })
       this.directionService = new google.maps.DirectionsService();
+    }
+
+    async getDataFromStorage() {
+      return await this.storage.get('obj');
     }
 
   ngOnInit() {
@@ -158,20 +192,26 @@ export class CourseOngoingPage implements OnInit {
   }
 
    trajet() {
-    this.clearMarkers();
+    //this.clearMarkers();
     let start = new google.maps.Marker({
+
       position: {
-        lat: this.currLat,
-        lng: this.currLon
-      }
+        lat: this.lat,
+        lng: this.lon
+      },
+      icon: this.iconBase + "red-flag.png",
+      map: this.map
     });
 
     let end = new google.maps.Marker({
       position: {
-        lat: this.lat,
-        lng: this.lon
-      }
+        lat: this.currLat,
+        lng: this.currLon,
+      },
+      icon: this.iconBase + "green-flag.png",
+      map: this.map
     });
+
     this.markers.push(start);
     this.markers.push(end);
     
@@ -189,17 +229,19 @@ export class CourseOngoingPage implements OnInit {
     
     let directionsRenderer = new google.maps.DirectionsRenderer({
       preserveViewport: true,
-      suppressMarkers: false,
+      suppressMarkers: true,
       map: this.map
     });
     directionsRenderer.setMap(this.map);
 
-    this.directionService.route(request, function(result, status) {
+    this.directionService.route(request, (result, status) => {
       
       if (status == 'OK') {
+
         directionsRenderer.setDirections(result);
-        //this.map.fitBounds(directionsRenderer.getDirections().routes[0].bounds);
+        console.log(directionsRenderer.getDirections());
       }
+
     });
   }
 
