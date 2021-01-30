@@ -33,14 +33,20 @@ export class DriverMapPage implements OnInit {
   private iconBase: string;
   private directionService;
   private driverMarker: google.maps.Marker;
+  private client: UserInterface;
   private currLat;
   private currLon;
-  private stepPoints: any[];
+  private stepPoints;
   private clientLat;
   private clientLon;
   private geocoder;
   public courseStarted: boolean;
   public instructions: string;
+  public currDistance;
+  public currDuration;
+  private currInstruction;
+  private currStepLat;
+  private currStepLng;
 
   @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef
   public defaultPos: {
@@ -56,12 +62,12 @@ export class DriverMapPage implements OnInit {
       this.courseStarted = false;
     this.geocoder = new google.maps.Geocoder();
 
-    this.stepPoints = [];
+    this.stepPoints = {};
     this.driver = this.authService.getUserDetails();
 
     this.isOnline = false;
     this.isLoading = true;
-    this.iconBase = "http://sam.absolumentpc77-informatique.fr/"
+    this.iconBase = "http://192.168.1.17/"
     socket.emit("isConnected", this.driver);
     this.directionService = new google.maps.DirectionsService();
 
@@ -82,9 +88,18 @@ export class DriverMapPage implements OnInit {
       this.destinationAddress = data.address;
       this.clientLat = data.lat;
       this.clientLon = data.lon;
+      this.client = data.client;
       this.launchAlert(data);
 
     });
+
+    socket.fromEvent('step').subscribe((step: any) => {
+      this.instructions = step.instructions;
+      this.currDuration = step.duration;
+      this.currDistance = step.distance;
+      let newLatLng = new google.maps.LatLng(step.latitude, step.longitude);
+      this.driverMarker.setPosition(newLatLng);
+    })
   }
 
   ngOnInit() {
@@ -198,27 +213,31 @@ export class DriverMapPage implements OnInit {
                   console.log("leg");
                   console.log(result.routes[0].legs[0].steps);
                   let steps = result.routes[0].legs[0].steps;
+                  let i = 0;
                   steps.forEach(step => {
-    
+                    this.currDistance = step.distance.text;
+                    this.currDuration = step.duration.text;
+                    this.currInstruction = step.instructions;
                     step.path.forEach((pos, index) => {
-                      let obj = [];
-                      obj["distance"] = step.duration.text;
-                      obj["duration"] = step.duration.text;
-                      obj["instructions"] = step.instructions;
-                      obj["latitude"] = pos.lat();
-                      obj["longitude"] = pos.lng();
-                      this.stepPoints.push(obj);
+                      i++;
+                      var obj = {
+                        distance: this.currDistance,
+                        duration: this.currDuration,
+                        instructions: this.currInstruction,
+                        latitude: pos.lat(),
+                        longitude: pos.lng()
+                      };
+                      this.stepPoints[i] = obj;
                       /*setTimeout(() => {
                         let newLatLng = new google.maps.LatLng(pos.lat(), pos.lng());
                         this.driverMarker.setPosition(newLatLng);
                         console.log("TIME OUIT");
                       }, 1000 * index)*/
                     });
-    
                   });
-                  this.moveMarker();
-    
-                  console.log(directionsRenderer.getDirections());
+                  console.log("STEPPOINT");
+                  console.log(this.stepPoints);
+                  this.socket.emit("sendRoute", this.stepPoints, this.driver, this.client);
                 }
               })
             }
@@ -230,65 +249,6 @@ export class DriverMapPage implements OnInit {
     })
 
     await alert.present();
-  }
-
-  moveMarker() {
-    console.log(this.stepPoints);
-    this.stepPoints.forEach((step, index) => {
-      setTimeout(() => {
-        this.instructions = step.instructions;
-        let newLatLng = new google.maps.LatLng(step.latitude, step.longitude);
-        this.driverMarker.setPosition(newLatLng);
-      }, 300 * index)
-    })
-  }
-
-  acceptCourse() {
-
-    let tmpLat = this.lat;
-    let tmpLon = this.lon;
-    let start = new google.maps.Marker({
-
-      position: {
-        lat: tmpLat,
-        lng: tmpLon
-      },
-      icon: this.iconBase + "green-flag.png",
-      map: this.map
-    });
-
-    let directionsRenderer = new google.maps.DirectionsRenderer({
-      preserveViewport: true,
-      suppressMarkers: true,
-      map: this.map
-    });
-    directionsRenderer.setMap(this.map);
-
-    new google.maps.DistanceMatrixService().getDistanceMatrix({
-      origins: [start.getPosition()],
-      destinations: [this.clientAddress],
-      travelMode: google.maps.TravelMode.BICYCLING,
-      avoidHighways: true,
-      avoidTolls: true
-    }, this.callbackDistance);
-
-    const request = {
-      origin: start.getPosition(),
-      destination: this.clientAddress,
-      avoidHighways: true,
-      avoidTolls: true,
-      travelMode: 'BICYCLING'
-    }
-
-    this.directionService.route(request, (result, status) => {
-      if (status == 'OK') {
-
-        directionsRenderer.setDirections(result);
-        console.log("DIRECTION SERVICE")
-        console.log(result);
-        console.log(directionsRenderer.getDirections());
-      }
-    })
   }
 
   callbackDistance(response, status) {

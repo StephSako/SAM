@@ -10,7 +10,7 @@
         
         <h2 *ngIf="isOnline && !courseStarted">Vous êtes en ligne </h2>
         <p *ngIf="isOnline && !courseStarted" style="font-size: 20px;">En attente d'un client</p>
-        <div innerHTML="{{ instructions }}"></div>
+        <div innerHTML="{{ instructions }}{{ currDistance }} - {{ currDuration }}"></div>
 
         <br>
       </ion-col>

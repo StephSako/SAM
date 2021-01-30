@@ -31,12 +31,13 @@ export class CourseOngoingPage implements OnInit {
   private directionService;
   public map: google.maps.Map;
   private markers = new Array();
-  private driver: DriverData;
+  public driver: DriverData;
   address: string;
   clientAddress: string;
   private client: UserInterface;
   private iconBase: string;
   public searching: boolean;
+  private driverMarker: google.maps.Marker;
 
 
   public coordinates: Observable<GeolocationPosition>;
@@ -56,7 +57,7 @@ export class CourseOngoingPage implements OnInit {
     public alertController: AlertController,
     private storage: Storage) {
       this.searching = true;
-      this.iconBase = "http://bitwarden.absolumentpc77-informatique.fr/"
+      this.iconBase = "http://192.168.1.17/"
       this.client = this.authService.getUserDetails();
       this.route.queryParams.subscribe(params => {
         if(this.router.getCurrentNavigation().extras.state) {
@@ -91,8 +92,14 @@ export class CourseOngoingPage implements OnInit {
             this.socket.emit("newCourse", this.driver, this.address, this.clientAddress, this.client);
           })
         }
+
       })
       this.directionService = new google.maps.DirectionsService();
+      socket.fromEvent('step').subscribe((step: any) => {
+        this.searching = false;
+        let newLatLng = new google.maps.LatLng(step.latitude, step.longitude);
+        this.driverMarker.setPosition(newLatLng);
+      })
     }
 
     async getDataFromStorage() {
@@ -187,8 +194,18 @@ export class CourseOngoingPage implements OnInit {
         disableDefaultUI: true,
       }
     );
+
     const footer = document.getElementById("footer");
     this.map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(footer);
+
+    this.driverMarker = new google.maps.Marker({
+      position: {
+        lat: this.driver.latitude_pos,
+        lng: this.driver.longitude_pos
+      },
+      icon: this.iconBase + "bicycle.png",
+      map: this.map
+    })
   }
 
    trajet() {

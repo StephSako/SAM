@@ -10,6 +10,7 @@ import { DriverData } from '../tab1/driver-data.model';
 import PlaceResult = google.maps.places.PlaceResult;
 import { NavigationExtras, Router } from '@angular/router';
 import * as _ from 'lodash';
+import { Socket } from 'ngx-socket-io';
 
 const { Toast, Geolocation } = Capacitor.Plugins;
 
@@ -33,10 +34,12 @@ export class ClientHomePage implements OnInit {
   public latitude: number;
   public longitude: number;
   public selectedAddress: PlaceResult;
-  public map: google.maps.Map
-  private drivers: DriverData[];
+  public map: google.maps.Map;
   private count = 0;
   clientAddress: string;
+  private drivers: any;
+  private driversMap: DriverData
+  private markers : any[];
 
   public lat;
   public lon;
@@ -44,15 +47,37 @@ export class ClientHomePage implements OnInit {
 
   @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef
 
-  constructor(public loading: LoadingController, public alertCtrl: AlertController, private authService: AuthService, private router: Router) { }
+  constructor(public loading: LoadingController,
+    public alertCtrl: AlertController,
+    private authService: AuthService,
+    private router: Router,
+    private socket: Socket) {
+      this.markers = [];
+      socket.fromEvent('driversMap').subscribe(data => {
+        this.drivers = data;
+        console.log(data);
+      });
+
+      socket.fromEvent('driversUpdate').subscribe(data => {
+        this.markers.forEach((marker) => {
+          marker.setMap(null);
+        })
+        this.markers.length = 0;
+        this.drivers = data;
+        this.computeClientDistance().then(() => {
+          this.placeDriverMarker();
+        })
+      })
+  }
 
   ngOnInit() {
     this.user = this.authService.getUserDetails();
+    this.socket.emit("clientJoin", this.user);
     this.authService
-    .getDrivers()
-    .subscribe((drivers: DriverData[]) => {
-      this.drivers = drivers;
-    })
+      .getDrivers()
+      .subscribe((drivers: DriverData[]) => {
+        //this.drivers = drivers;
+      })
     /**/
     // start the loader
     this.lat = 45;
@@ -81,10 +106,10 @@ export class ClientHomePage implements OnInit {
             return null;
           });
       });
-      /**
-      this.getCurrentLocation();
-      /**/
-      //GET DISTANCE AND TIME
+    /**
+    this.getCurrentLocation();
+    /**/
+    //GET DISTANCE AND TIME
   }
 
   ngAfterViewInit() {
@@ -95,19 +120,31 @@ export class ClientHomePage implements OnInit {
     console.log("retour à la page précédente");
   }
 
-  redirect() {
-    let lowest = Number.POSITIVE_INFINITY;
-    let tmpDriver;
-    this.drivers.forEach((driver) => {
-      let tmpTime = driver.distance_client_time;
-
-      if(driver.distance_client_time < lowest) {
-        lowest = tmpTime;
-        tmpDriver = driver;
+  async redirect() {
+    if(Object.keys(this.drivers).length > 0) {
+      let lowest = Number.POSITIVE_INFINITY;
+      let tmpDriver;
+      for(let key in this.drivers) {
+        let driver = this.drivers[key];
+        let tmpTime = driver.distance_client_time;
+  
+        if (driver.distance_client_time < lowest) {
+          lowest = tmpTime;
+          tmpDriver = driver;
+        }
       }
-    })
-    let naviguationExtras: NavigationExtras = {state: {driver: tmpDriver, clientAddress: this.clientAddress}}
-    this.router.navigate(['/search-place'], naviguationExtras);
+      let naviguationExtras: NavigationExtras = { state: { driver: tmpDriver, clientAddress: this.clientAddress } }
+      this.router.navigate(['/search-place'], naviguationExtras);
+    } else {
+      const alert = await this.alertCtrl.create({
+        header: 'Coursier',
+        message: "Il n'y a pas de SAM disponible pour le moment",
+        buttons: ['OK']
+      });
+  
+      await alert.present();
+    }
+
   }
 
   async displayLoader() {
@@ -133,10 +170,10 @@ export class ClientHomePage implements OnInit {
     const isAvailable: boolean = Capacitor.isPluginAvailable("Geolocation");
     if (!isAvailable) {
       console.log("ERR: Plugin is not available");
-      return of (new Error("ERR: Plugin not available"));
+      return of(new Error("ERR: Plugin not available"));
     }
     const POSITION = Plugins.Geolocation.getCurrentPosition()
-    // handle Capacitor errors
+      // handle Capacitor errors
       .catch(err => {
         console.log("ERR", err);
         return new Error(err.message || "customized message");
@@ -150,16 +187,19 @@ export class ClientHomePage implements OnInit {
 
   computeClientDistance() {
     return new Promise((resolve, reject) => {
-      this.drivers.forEach(driver => {
+      console.log("LENGTH");
+      console.log(Object.keys(this.drivers).length);
+      for(let key in this.drivers) {
+        let driver = this.drivers[key];
         let start = new google.maps.LatLng(driver.latitude_pos, driver.longitude_pos)
         let end = new google.maps.LatLng(this.lat, this.lon)
-        if((driver.latitude_pos) && (driver.longitude_pos))  {
+        if ((driver.latitude_pos) && (driver.longitude_pos)) {
           new google.maps.DistanceMatrixService().getDistanceMatrix({
             origins: [start],
             destinations: [end],
             travelMode: google.maps.TravelMode.DRIVING
-          },(response, status) => {
-            if(status == 'OK') {
+          }, (response, status) => {
+            if (status == 'OK') {
               console.log(response);
               this.count++;
               var origins = response.originAddresses;
@@ -172,30 +212,33 @@ export class ClientHomePage implements OnInit {
 
                   var distance = element.distance.text;
                   driver.distance_client_km = distance;
-                  
+
                   var duration = element.duration.value;
                   driver.distance_client_time = +duration;
 
                   driver.client_time_text = element.duration.text;
-                  
+
                   var from = origins[i];
                   var to = destinations[j];
                 }
               }
-              if(this.count == 4) {
+              if (this.count == Object.keys(this.drivers).length) {
                 this.count = 0;
+                console.log("FINISHED");
                 resolve("ok");
               }
             }
           });
         }
-      })
+      }
     });
 
   }
 
   placeDriverMarker() {
-    this.drivers.forEach(driver => {
+    console.log("PLACE")
+    for(let key in this.drivers) {
+      let driver = this.drivers[key];
       if ((driver.longitude_pos) && (driver.latitude_pos)) {
         let msg = "<b>" + driver.firstname + " " + driver.lastname + " à " + driver.distance_client_km + " <br/>"
         let info = new google.maps.InfoWindow({
@@ -206,11 +249,12 @@ export class ClientHomePage implements OnInit {
           map: this.map,
           icon: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png"
         })
+        this.markers.push(marker);
         marker.addListener("click", () => {
           info.open(this.map, marker);
         })
       }
-    })
+    }
   }
 
   initMap() {
