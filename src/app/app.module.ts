@@ -26,7 +26,9 @@ const config: SocketIoConfig = { url: 'http://localhost:4000', options: {withCre
   imports: [
     BrowserModule,
     SocketIoModule.forRoot(config),
-    IonicModule.forRoot(),
+    IonicModule.forRoot({
+      mode:'ios'
+    }),
     IonicStorageModule.forRoot(),
     AppRoutingModule,
         AgmCoreModule.forRoot({
