@@ -38,6 +38,8 @@ export class CourseOngoingPage implements OnInit {
   private iconBase: string;
   public searching: boolean;
   private driverMarker: google.maps.Marker;
+  private originLat;
+  private originLon;
 
 
   public coordinates: Observable<GeolocationPosition>;
@@ -65,20 +67,27 @@ export class CourseOngoingPage implements OnInit {
           this.lat = this.router.getCurrentNavigation().extras.state.lat;
           this.driver = this.router.getCurrentNavigation().extras.state.driver;
           this.address = this.router.getCurrentNavigation().extras.state.address;
-          this.clientAddress = this.router.getCurrentNavigation().extras.state.clientAddress
+          this.clientAddress = this.router.getCurrentNavigation().extras.state.clientAddress;
+          this.originLat = this.router.getCurrentNavigation().extras.state.originLat;
+          this.originLon = this.router.getCurrentNavigation().extras.state.originLon;
+          console.log("ORIGIN");
+          console.log(this.originLat);
+          console.log(this.originLon);
           let objSaved = {};
           objSaved["lon"] = this.lon;
           objSaved["lat"] = this.lat;
           objSaved["driver"] = this.driver;
           objSaved["address"] = this.address;
           objSaved["clientAddress"] = this.clientAddress;
+          objSaved["originLat"] = this.originLat;
+          objSaved["originLon"] = this.originLon;
           console.log("obj");
           console.log(objSaved);
           storage.set("obj", objSaved);
           console.log("LOCATION")
           console.log(this.lat);
           console.log(this.lon);
-          this.socket.emit("newCourse", this.driver, this.address, this.clientAddress, this.client, this.lat, this.lon);
+          this.socket.emit("newCourse", this.driver, this.address, this.clientAddress, this.client, this.lat, this.lon, this.originLat, this.originLon);
         } else {
           let objj = this.getDataFromStorage();
           console.log("obj");
@@ -89,13 +98,20 @@ export class CourseOngoingPage implements OnInit {
             this.driver = obj["driver"];
             this.address = obj["address"];
             this.clientAddress = obj["clientAddress"];
-            this.socket.emit("newCourse", this.driver, this.address, this.clientAddress, this.client);
+            this.originLat = obj["originLat"];
+            this.originLon = obj["originLon"];
+            console.log("ORIGIN");
+            console.log(this.originLat);
+            console.log(this.originLon);
+            this.socket.emit("newCourse", this.driver, this.address, this.clientAddress, this.client, this.originLat, this.originLon);
           })
         }
 
       })
       this.directionService = new google.maps.DirectionsService();
       socket.fromEvent('step').subscribe((step: any) => {
+        console.log("STEP");
+        console.log(step);
         this.searching = false;
         let newLatLng = new google.maps.LatLng(step.latitude, step.longitude);
         this.driverMarker.setPosition(newLatLng);

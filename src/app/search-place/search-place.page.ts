@@ -23,6 +23,8 @@ export class SearchPlacePage implements OnInit {
   public map: google.maps.Map;
   private driver: DriverData;
   private clientAdress : string;
+  private originLat;
+  private originLon;
 
   public coordinates: Observable<GeolocationPosition>;
   @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef
@@ -35,6 +37,8 @@ export class SearchPlacePage implements OnInit {
         if(this.router.getCurrentNavigation().extras.state) {
           this.driver = this.router.getCurrentNavigation().extras.state.driver;
           this.clientAdress = this.router.getCurrentNavigation().extras.state.clientAddress;
+          this.originLat = this.router.getCurrentNavigation().extras.state.originLat;
+          this.originLon = this.router.getCurrentNavigation().extras.state.originLon;
         }
       })
     }
@@ -134,7 +138,9 @@ export class SearchPlacePage implements OnInit {
         lon: this.longitude, 
         driver: this.driver, 
         address: result.formatted_address,
-        clientAddress: this.clientAdress
+        clientAddress: this.clientAdress,
+        originLat: this.originLat,
+        originLon: this.originLon
       }
     }
     this.router.navigate(['/course-ongoing'], naviguationExtras);

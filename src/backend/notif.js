@@ -56,16 +56,14 @@ module.exports = (io) => {
          */
 
         //Notify the driver
-        socket.on('newCourse', (driver, address, clientAddress, client, lat, lon) => {
+        socket.on('newCourse', (driver, address, clientAddress, client, lat, lon, originLat, originLon) => {
             clientJoin(socket.id, client);
-            console.log(driver);
             driverToNotify = findDriverById(driver.id_user);
             time_text = driver.client_time_text;
             socket_id = driverToNotify.id;
-            console.log(socket_id);
-            console.log(lat);
-            console.log(lon);
-            io.to(socket_id).emit('driverCourse', {address, clientAddress, client, time_text, lat, lon});
+            console.log(originLon);
+            console.log(originLat);
+            io.to(socket_id).emit('driverCourse', {address, clientAddress, client, time_text, lat, lon, originLat, originLon});
 
         })
 

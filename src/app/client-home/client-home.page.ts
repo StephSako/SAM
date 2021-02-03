@@ -133,7 +133,7 @@ export class ClientHomePage implements OnInit {
           tmpDriver = driver;
         }
       }
-      let naviguationExtras: NavigationExtras = { state: { driver: tmpDriver, clientAddress: this.clientAddress } }
+      let naviguationExtras: NavigationExtras = { state: { driver: tmpDriver, clientAddress: this.clientAddress, originLat: this.lat, originLon: this.lon} }
       this.router.navigate(['/search-place'], naviguationExtras);
     } else {
       const alert = await this.alertCtrl.create({
@@ -197,7 +197,7 @@ export class ClientHomePage implements OnInit {
           new google.maps.DistanceMatrixService().getDistanceMatrix({
             origins: [start],
             destinations: [end],
-            travelMode: google.maps.TravelMode.DRIVING
+            travelMode: google.maps.TravelMode.BICYCLING
           }, (response, status) => {
             if (status == 'OK') {
               console.log(response);
@@ -240,7 +240,7 @@ export class ClientHomePage implements OnInit {
     for(let key in this.drivers) {
       let driver = this.drivers[key];
       if ((driver.longitude_pos) && (driver.latitude_pos)) {
-        let msg = "<b>" + driver.firstname + " " + driver.lastname + " à " + driver.distance_client_km + " <br/>"
+        let msg = "<b>" + driver.firstname + " " + driver.lastname + " à " + driver.client_time_text +  " ( "  + driver.distance_client_km + " )<br/>"
         let info = new google.maps.InfoWindow({
           content: msg
         })
@@ -274,6 +274,7 @@ export class ClientHomePage implements OnInit {
         disableDefaultUI: true,
       }
     );
+
     const callButton = document.getElementById("call");
     this.map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(callButton);
   }

@@ -47,6 +47,8 @@ export class DriverMapPage implements OnInit {
   private currInstruction;
   private currStepLat;
   private currStepLng;
+  private originLat;
+  private originLon;
 
   @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef
   public defaultPos: {
@@ -89,6 +91,11 @@ export class DriverMapPage implements OnInit {
       this.clientLat = data.lat;
       this.clientLon = data.lon;
       this.client = data.client;
+      this.originLon = data.originLon;
+      this.originLat = data.originLat;
+      console.log("ORIGIN");
+      console.log(this.originLon);
+      console.log(this.originLat);
       this.launchAlert(data);
 
     });
@@ -173,8 +180,8 @@ export class DriverMapPage implements OnInit {
               let end = new google.maps.Marker({
     
                 position: {
-                  lat: results[0].geometry.location.lat(),
-                  lng: results[0].geometry.location.lng()
+                  lat: this.originLat,
+                  lng: this.originLon
                 },
                 icon: this.iconBase + "red-flag.png",
                 map: this.map
@@ -189,7 +196,7 @@ export class DriverMapPage implements OnInit {
     
               new google.maps.DistanceMatrixService().getDistanceMatrix({
                 origins: [start.getPosition()],
-                destinations: [this.clientAddress],
+                destinations: [end.getPosition()],
                 travelMode: google.maps.TravelMode.BICYCLING,
                 avoidHighways: true,
                 avoidTolls: true
@@ -198,7 +205,7 @@ export class DriverMapPage implements OnInit {
               console.log(this.clientAddress)
               const request = {
                 origin: start.getPosition(),
-                destination: this.clientAddress,
+                destination: end.getPosition(),
                 avoidHighways: true,
                 avoidTolls: true,
                 travelMode: 'BICYCLING'
