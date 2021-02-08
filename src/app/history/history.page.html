@@ -1,6 +1,6 @@
 <ion-content >
   <ion-grid>
-    <ion-row class="ion-align-items-center" style="padding-top:8%;">
+    <ion-row class="ion-align-items-center" style="padding-top:20%;"><!--
       <ion-col size="2">
         <div class="padding">
           <br><br><br><br>
@@ -31,7 +31,67 @@
         <ion-text>280m-3min</ion-text>
         <br><br><br>
         <ion-text>280m-3min</ion-text></div>
-      </ion-col>
+      </ion-col>--><!--
+      <ion-title>Historique</ion-title>
+    </ion-row>
+    <ion-row style="padding-top:8%;background-color: red;">
+      <ion-grid>
+        <ion-row *ngFor="let course of courses">
+          <ion-col>{{course.date}}</ion-col>
+          <ion-col>{{course.name}}</ion-col>
+          <ion-col>{{ course.distance }} - {{ course.time }}</ion-col>
+        </ion-row>
+      </ion-grid>-->
+
+      <ion-grid class="ion-text-center">
+
+        <ion-row class="ion-margin">
+          <ion-col style="border: none">
+            <ion-title>
+              <ion-text>
+                Historique
+              </ion-text>
+            </ion-title>
+          </ion-col>
+        </ion-row>
+    
+        <ion-row class="header-row">
+          <ion-col>
+            <ion-text>Date</ion-text>
+          </ion-col>
+    
+          <ion-col>
+            <ion-text>Chauffeur</ion-text>
+          </ion-col>
+    
+          <ion-col>
+            <ion-text>Infos</ion-text>
+          </ion-col>
+        </ion-row>
+    
+    
+        <ion-row *ngFor="let course of courses">
+          <ion-col class="cell">
+            <ion-text>
+              {{course.date}}
+            </ion-text>
+          </ion-col>
+    
+            <ion-col class="cell">
+              <ion-text>
+                {{course.name}}
+              </ion-text>
+            </ion-col>
+      
+            <ion-col class="cell">
+              <ion-text>
+                {{ course.distance }} - {{ course.time }}
+              </ion-text>
+            </ion-col>
+        </ion-row>
+    
+      </ion-grid>
+
     </ion-row>
   </ion-grid>
 </ion-content>
