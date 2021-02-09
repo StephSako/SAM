@@ -83,8 +83,7 @@ export class CourseConfirmationPage implements OnInit {
         return new Error(err.message || "customized message");
       });
     this.coordinates = fromPromise(POSITION).pipe(
-      switchMap((data: any) => of(data.coords)),
-      tap(data => console.log(data))
+      switchMap((data: any) => of(data.coords))
     );
     return POSITION;
   }
