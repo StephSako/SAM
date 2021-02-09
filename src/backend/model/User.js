@@ -15,6 +15,10 @@ module.exports = db.sequelize.define(
             type: Sequelize.STRING,
             allowNull: false
         },
+        profile_pic_name: {
+            type: Sequelize.STRING,
+            allowNull: true
+        },
         lastname: {
             type: Sequelize.STRING,
             allowNull: false

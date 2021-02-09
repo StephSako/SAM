@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {Validators, FormBuilder, FormGroup, AbstractControl, FormControl, NgForm } from '@angular/forms';
+import { Validators, FormBuilder, FormGroup, AbstractControl, FormControl } from '@angular/forms';
 import { TokenPayloadRegister } from '../interfaces/userInterface';
 import { AuthService } from '../services/auth.service';
 
@@ -12,6 +12,8 @@ export class SignUpPage implements OnInit {
 
    signUp: FormGroup;
    spinnerShown: boolean;
+   profilePic: File = null;
+   urlProfilePic;
 
    credentials: TokenPayloadRegister = {
     firstname_user: null,
@@ -19,7 +21,8 @@ export class SignUpPage implements OnInit {
     email_user: null,
     role_user_id: 1,
     password_user: null,
-    phone_number_user: null
+    phone_number_user: null,
+     profile_pic_name: null
   };
 
   constructor(private formBuilder: FormBuilder, private authService: AuthService) {
@@ -30,7 +33,7 @@ export class SignUpPage implements OnInit {
       phone: ['', [this.phoneNumberValidator]],
       password: ['', [Validators.required, this.noWhitespaceValidator]],
       confirmPassword: ['', [this.passwordMatchValidator]]
-    })
+    });
   }
 
   ngOnInit() {
@@ -38,28 +41,32 @@ export class SignUpPage implements OnInit {
 
   onSignup() {
     this.spinnerShown = true;
-    this.authService.register(this.credentials)
-    .subscribe((data: any) => {
+
+    this.authService.register(this.credentials).subscribe(() => {
       this.spinnerShown = false;
-    }),
-    err => {
-      this.spinnerShown = false;
-    }
+
+      const uploadData = new FormData();
+      uploadData.append('profilePic', this.profilePic, (this.profilePic ? this.profilePic.name : ''));
+      this.authService.uploadProfilePic(uploadData, this.authService.getUserDetails().id_user, this.profilePic.name).subscribe(() => {});
+      }, err => {
+        this.spinnerShown = false;
+        console.log(err);
+    });
   }
 
   noWhitespaceValidator(control: FormControl) {
     const isWhitespace = (control.value || '').trim().length === 0;
     const isValid = !isWhitespace;
-    return isValid ? null : { 'whitespace': true };
+    return isValid ? null : { whitespace: true };
   }
 
   passwordMatchValidator(control: AbstractControl) {
-    let parent = control.parent;
-    if(parent) {
-      let password = parent.get("password").value;
-      let confirmPassword = control.value;
+    const parent = control.parent;
+    if (parent) {
+      const password = parent.get('password').value;
+      const confirmPassword = control.value;
 
-      if(password != confirmPassword) {
+      if (password != confirmPassword) {
         return { ConfirmPassword: true};
       } else {
         return null;
@@ -70,10 +77,20 @@ export class SignUpPage implements OnInit {
   }
 
   phoneNumberValidator(control: FormControl) {
-    if(!(/^(?:(?:\+|00)33[\s.-]{0,3}(?:\(0\)[\s.-]{0,3})?|0)[1-9](?:(?:[\s.-]?\d{2}){4}|\d{2}(?:[\s.-]?\d{3}){2})$/.test(control.value))) {
-      return {'phone_invalid': true}
+    if (!(/^(?:(?:\+|00)33[\s.-]{0,3}(?:\(0\)[\s.-]{0,3})?|0)[1-9](?:(?:[\s.-]?\d{2}){4}|\d{2}(?:[\s.-]?\d{3}){2})$/.test(control.value))) {
+      return {phone_invalid: true};
     } else {
       return null;
     }
+  }
+
+  onFileChanged(event) {
+    this.profilePic = event.target.files[0];
+    this.credentials.profile_pic_name = this.profilePic.name;
+    const reader = new FileReader();
+    reader.readAsDataURL(event.target.files[0]);
+    reader.onload = (_event) => this.urlProfilePic = reader.result;
+    const formData = new FormData();
+    formData.append('upload', event.target.files[0], event.target.files[0].name);
   }
 }

@@ -1,9 +1,19 @@
-var express  = require("express");
+const express  = require("express");
 const user = require("../controller/UserController");
-var router = express.Router();
+const router = express.Router();
+const multipart = require('connect-multiparty');
+const multipartMiddleware = multipart({
+    uploadDir: './src/backend/controller/uploads'
+});
 
 //Register route
 router.post("/register", user.register);
+
+// Upload profile pic
+router.post('/profile_pic/upload/:userId/:profile_pic_name', multipartMiddleware, user.uploadProfilePic);
+
+// Download profile pic
+router.get('/profile_pic/download/:userId', user.downloadProfilePic);
 
 //Login route
 router.post("/login", user.login);

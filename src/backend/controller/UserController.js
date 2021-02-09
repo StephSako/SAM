@@ -1,13 +1,11 @@
-const express = require('express')
-const user = express.Router()
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
 const User = require("../model/User")
 const Role = require("../model/Role")
 const { Op } = require("sequelize");
-const nodemailer = require('nodemailer');
-const btoa = require('btoa');
-const atob = require('atob');
+const path = require('path');
+const fs = require('fs');
+const glob = require("glob")
 
 process.env.SECRET_KEY = 'secret'
 
@@ -19,16 +17,67 @@ exports.register = (req, res) => {
         password: req.body.password_user,
         phone_number: req.body.phone_number_user,
         role_user_id: req.body.role_user_id,
-        email: req.body.email_user
+        email: req.body.email_user,
+        profile_pic_name: req.body.profile_pic_name
     }
     userData.password = bcrypt.hashSync(userData.password, 12)
     User.create(userData).then(user => {
         let token = jwt.sign(user.dataValues, process.env.SECRET_KEY, { expiresIn: 1440 })
-        res.json({token: token})
+        res.status(200).json({token: token})
     }).catch(err => {
         if (err.errors[0].path === "unique_phone_number") res.status(401).send("Le numéro de télephone est déjà lié un compte existant")
         else if (err.errors[0].path === "unique_email") res.status(401).send("L'adresse email est déjà lié un compte existant")
         else res.status(401).send("Une erreur est survenue dans la mise à jour du compte")
+    })
+}
+
+// UPLOAD PROFILE PIC WITH A GIVEN USER ID
+exports.uploadProfilePic = (req, res) => {
+    User.findOne({
+        where: {
+            id_user: req.params.userId
+        }
+    }).then(user => {
+        // On supprime l'image de profil précédente
+        if (user.profile_pic_name !== null){
+            glob(path.join(__dirname, 'uploads', user.id_user + '_*'), function (er, files) {
+                for (const file of files) {
+                    fs.unlink(file, (err) => { if (err) throw err })
+                }
+
+                let target_path = path.join(__dirname, 'uploads', req.params.userId + '_' + req.params.profile_pic_name)
+                fs.rename(req.files.profilePic.path, target_path, function(err) {
+                    if (err) throw err
+                    fs.unlink(req.files.profilePic.path, function() {
+                        if (err) throw err;
+                        res.status(200).json({message: 'Image uploaded successfully to: ' + target_path });
+                    })
+                })
+            })
+        }
+    }).catch(err => {
+        res.status(500).send(err)
+    })
+}
+
+// GET PROFILE PIC WITH A GIVEN USER ID
+exports.downloadProfilePic = (req, res) => {
+    User.findOne({
+        where: {
+            id_user: req.params.userId
+        }
+    }).then(user => {
+        if (user.profile_pic_name){
+            const imageName = req.params.userId + '_' + user.profile_pic_name
+            const imagePath = path.join(__dirname, 'uploads', imageName);
+            fs.exists(imagePath, exists => {
+                if (exists) res.sendFile(imagePath);
+                else res.status(400).send('Error: Image does not exists');
+            });
+        }
+        else res.status(500).send("Cette image de profil est introuvable")
+    }).catch(err => {
+        res.status(500).send(err)
     })
 }
 
@@ -104,6 +153,10 @@ exports.edit = (req, res) => {
     }).then(num => {
 
         if (num =! 0) {
+
+            // TODO DELETE PROFILE PICTURE
+
+
             User.findOne({
                 where: {
                     id_user: id_user
