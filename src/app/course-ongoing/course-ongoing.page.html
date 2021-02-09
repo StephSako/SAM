@@ -32,8 +32,11 @@
         </ion-button>
       </ion-col>
       <ion-col size="6"*ngIf="!searching">
-        <p>Votre chauffeur {{driver.firstname}} {{ driver.lastname }} arrive !</p>
-        <p><i>{{ distance }}m - {{ time }}min</i></p>
+        <div style="font-size: 20px;">
+         <p>Votre chauffeur {{driver.firstname}} {{ driver.lastname }} arrive !</p><br/>
+        <p *ngIf="!arrived">{{ distance }} - {{ time }}</p>
+        </div>
+
       </ion-col>
     </ion-row>
   </ion-grid>

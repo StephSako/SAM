@@ -52,6 +52,9 @@ export class ClientHomePage implements OnInit {
     private authService: AuthService,
     private router: Router,
     private socket: Socket) {
+      this.user = this.authService.getUserDetails();
+      this.lat = this.user.latitude_pos;
+      this.lon = this.user.longitude_pos;
       this.markers = [];
       socket.fromEvent('driversMap').subscribe(data => {
         this.drivers = data;
@@ -80,8 +83,6 @@ export class ClientHomePage implements OnInit {
       })
     /**/
     // start the loader
-    this.lat = 45;
-    this.lon = 9
     this.displayLoader()
       .then((loader: any) => {
         // get position
@@ -89,8 +90,8 @@ export class ClientHomePage implements OnInit {
           .then(position => {
             //close loader and return position
             loader.dismiss();
-            this.lat = position.coords.latitude;
-            this.lon = position.coords.longitude;
+            this.lat = this.user.latitude_pos;
+            this.lon = this.user.longitude_pos;
             console.log(position);
             this.initMap();
             this.computeClientDistance().then(() => {
@@ -194,6 +195,8 @@ export class ClientHomePage implements OnInit {
         let start = new google.maps.LatLng(driver.latitude_pos, driver.longitude_pos)
         let end = new google.maps.LatLng(this.lat, this.lon)
         if ((driver.latitude_pos) && (driver.longitude_pos)) {
+          console.log(this.lat);
+          console.log(this.lon);
           new google.maps.DistanceMatrixService().getDistanceMatrix({
             origins: [start],
             destinations: [end],

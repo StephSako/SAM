@@ -56,30 +56,40 @@ module.exports = (io) => {
          */
 
         //Notify the driver
-        socket.on('newCourse', (driver, address, clientAddress, client, lat, lon, originLat, originLon) => {
-            clientJoin(socket.id, client);
-            driverToNotify = findDriverById(driver.id_user);
-            time_text = driver.client_time_text;
+        socket.on('newCourse', (data) => {
+            socket.join("courseRoom");
+            console.log("DATA");
+            console.log(data);
+            driverToNotify = findDriverById(data.driver.id_user);
             socket_id = driverToNotify.id;
-            console.log(originLon);
-            console.log(originLat);
-            io.to(socket_id).emit('driverCourse', {address, clientAddress, client, time_text, lat, lon, originLat, originLon});
+            console.log("driver socket id");
+            console.log(socket_id);
+            console.log("ORIGIN");
+            console.log(data.originLat);
+            console.log(data.originLon);
+            io.to(socket_id).emit('driverCourse', data);
 
         })
 
         socket.on("sendRoute", (stepPoints, driver, client) => {
+            socket.join("courseRoom")
             driverToNotify = findDriverById(driver.id_user);
             clientToNotify = findClientById(client.id_user);
             socket_id = driverToNotify.id;
             socket_id_client = clientToNotify.id;
+            console.log("client socket");
+            console.log(socket_id_client);
             let i = 0;
             for(let key in stepPoints) {
                 i++
                 setTimeout(() => {
-                    io.to(socket_id).emit("step", stepPoints[key]);
-                    io.to(socket_id_client).emit("step", stepPoints[key]);
-                    
-                }, i * 200)
+                    console.log(stepPoints[key].longitude);
+                    io.to("courseRoom").emit('step', stepPoints[key]);
+                    /*io.to(socket_id).emit("step", stepPoints[key]);
+                    io.to(socket_id_client).emit("step", stepPoints[key]);*/
+
+                }, i * 300)
+
             }
         });
     })

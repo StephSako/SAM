@@ -25,6 +25,8 @@ export class DriverMapPage implements OnInit {
   public lon;
   public bounds;
   public map: google.maps.Map;
+  public start;
+  public dest;
   private driver: UserInterface;
   isOnline: boolean;
   isLoading: boolean;
@@ -60,6 +62,7 @@ export class DriverMapPage implements OnInit {
     public alertCtrl: AlertController,
     private socket: Socket,
     private authService: AuthService) {
+      this.start = "Votre position"
       this.instructions = "";
       this.courseStarted = false;
     this.geocoder = new google.maps.Geocoder();
@@ -87,9 +90,8 @@ export class DriverMapPage implements OnInit {
     socket.fromEvent('driverCourse').subscribe((data: any) => {
       console.log(data)
       this.clientAddress = data.clientAddress;
+      this.dest = this.clientAddress;
       this.destinationAddress = data.address;
-      this.clientLat = data.lat;
-      this.clientLon = data.lon;
       this.client = data.client;
       this.originLon = data.originLon;
       this.originLat = data.originLat;
@@ -101,11 +103,17 @@ export class DriverMapPage implements OnInit {
     });
 
     socket.fromEvent('step').subscribe((step: any) => {
+      console.log("STEP");
       this.instructions = step.instructions;
       this.currDuration = step.duration;
       this.currDistance = step.distance;
       let newLatLng = new google.maps.LatLng(step.latitude, step.longitude);
       this.driverMarker.setPosition(newLatLng);
+    })
+
+    socket.fromEvent('driverArrived').subscribe((data: any) => {
+      this.start = this.clientAddress;
+      this.dest = this.destinationAddress;
     })
   }
 
@@ -159,7 +167,7 @@ export class DriverMapPage implements OnInit {
         ' ' +
         data.client.lastname +
         '</b><br/> <b>Emplacement :</b> ' +
-        data.clientAddress + ' (' + data.time_text + ' ) <br/>',
+        data.clientAddress + ' (' + data.driver.client_time_text + ' ) <br/>',
       buttons: [{
         text: 'Accepter', handler: () => {
           this.geocoder.geocode({'address': this.clientAddress}, (results, status) => {
@@ -235,11 +243,6 @@ export class DriverMapPage implements OnInit {
                         longitude: pos.lng()
                       };
                       this.stepPoints[i] = obj;
-                      /*setTimeout(() => {
-                        let newLatLng = new google.maps.LatLng(pos.lat(), pos.lng());
-                        this.driverMarker.setPosition(newLatLng);
-                        console.log("TIME OUIT");
-                      }, 1000 * index)*/
                     });
                   });
                   console.log("STEPPOINT");
@@ -335,15 +338,11 @@ export class DriverMapPage implements OnInit {
   }
 
   initMap() {
-    const POSITION = {
-      lat: this.lat,
-      lng: this.lon
-    }
     this.map = new google.maps.Map(
       document.getElementById("mapdriver"),
       {
         zoom: 12,
-        center: POSITION || { lat: 22, lng: 22 },
+        center: { lat: this.driver.latitude_pos, lng: this.driver.longitude_pos },
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         streetViewControl: false,
         disableDefaultUI: true,

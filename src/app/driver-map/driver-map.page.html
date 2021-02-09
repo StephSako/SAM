@@ -1,4 +1,15 @@
 <div id="mapdriver"></div>
+<div style="position: absolute; top: 60px; width: 100%; background-color: #FFFFFF;" *ngIf="courseStarted">
+  <ion-item>
+    <input type="text" value="{{ start }}" matInput [readOnly]=true/>
+    <ion-icon name="pin-outline" slot="start"></ion-icon>
+  </ion-item>
+
+  <ion-item>
+    <input type="text" value="{{ dest }}" matInput [readOnly]=true/>
+    <ion-icon name="pin" slot="start"></ion-icon>
+  </ion-item>
+</div>
 <div style="position: absolute; bottom: 0px; width: 100%" class="footer" >
   <ion-grid>
     <ion-row>

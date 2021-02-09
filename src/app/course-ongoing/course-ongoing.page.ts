@@ -9,6 +9,7 @@ import { Socket } from 'ngx-socket-io';
 import { UserInterface } from '../interfaces/userInterface';
 import { AuthService } from '../services/auth.service';
 import { Storage } from '@ionic/storage';
+import { ChangeDetectorRef } from '@angular/core';
 
 const { Toast, Geolocation } = Capacitor.Plugins;
 
@@ -22,8 +23,9 @@ const { Toast, Geolocation } = Capacitor.Plugins;
 
 export class CourseOngoingPage implements OnInit {
 
-  distance: number = -1;
-  time: number = -1;
+  public distance;
+  public time;
+  public arrived: boolean;
   lon;
   lat;
   currLon;
@@ -57,12 +59,15 @@ export class CourseOngoingPage implements OnInit {
     private socket: Socket,
     private authService: AuthService,
     public alertController: AlertController,
+    private cd: ChangeDetectorRef,
     private storage: Storage) {
+      this.arrived = false;
       this.searching = true;
       this.iconBase = "http://192.168.1.17/"
       this.client = this.authService.getUserDetails();
       this.route.queryParams.subscribe(params => {
         if(this.router.getCurrentNavigation().extras.state) {
+          console.log("STATE");
           this.lon = this.router.getCurrentNavigation().extras.state.lon;
           this.lat = this.router.getCurrentNavigation().extras.state.lat;
           this.driver = this.router.getCurrentNavigation().extras.state.driver;
@@ -87,8 +92,19 @@ export class CourseOngoingPage implements OnInit {
           console.log("LOCATION")
           console.log(this.lat);
           console.log(this.lon);
-          this.socket.emit("newCourse", this.driver, this.address, this.clientAddress, this.client, this.lat, this.lon, this.originLat, this.originLon);
+          let courseInfo = {
+            driver: this.driver,
+            address: this.address,
+            clientAddress: this.clientAddress,
+            client: this.client,
+            lat: this.lat,
+            lon: this.lon,
+            originLat: this.originLat,
+            originLon: this.originLon
+          }
+          this.socket.emit("newCourse", courseInfo);
         } else {
+          console.log("DATA STORAGE");
           let objj = this.getDataFromStorage();
           console.log("obj");
           objj.then((obj) => {
@@ -103,24 +119,81 @@ export class CourseOngoingPage implements OnInit {
             console.log("ORIGIN");
             console.log(this.originLat);
             console.log(this.originLon);
-            this.socket.emit("newCourse", this.driver, this.address, this.clientAddress, this.client, this.originLat, this.originLon);
+            let courseInfo = {
+              driver: this.driver,
+              address: this.address,
+              clientAddress: this.clientAddress,
+              client: this.client,
+              lat: this.lat,
+              lon: this.lon,
+              originLat: this.originLat,
+              originLon: this.originLon
+            }
+            this.socket.emit("newCourse", courseInfo);
           })
         }
 
       })
       this.directionService = new google.maps.DirectionsService();
+
+      socket.fromEvent('driverArrived').subscribe((data: any) => {
+        console.log("ARRIVED");
+        this.arrived = true;
+      })
+
       socket.fromEvent('step').subscribe((step: any) => {
         console.log("STEP");
-        console.log(step);
         this.searching = false;
         let newLatLng = new google.maps.LatLng(step.latitude, step.longitude);
         this.driverMarker.setPosition(newLatLng);
+        let start = new google.maps.Marker({
+          position: {
+            lat: step.latitude,
+            lng: step.longitude
+          },
+        });
+
+        let end = new google.maps.Marker({
+          position: {
+            lat: this.originLat,
+            lng: this.originLon
+          },
+        });
+        new google.maps.DistanceMatrixService().getDistanceMatrix({
+          origins: [start.getPosition()],
+          destinations: [end.getPosition()],
+          travelMode: google.maps.TravelMode.BICYCLING,
+          avoidHighways: true,
+          avoidTolls: true
+        }, (response, status) => {
+          if (status == 'OK') {
+            var origins = response.originAddresses;
+            var destinations = response.destinationAddresses;
+        
+            for (var i = 0; i < origins.length; i++) {
+              var results = response.rows[i].elements;
+              for (var j = 0; j < results.length; j++) {
+                var element = results[j];
+                this.distance = element.distance.text;
+                this.time = element.duration.text;
+                //console.log(this.distance);
+                var from = origins[i];
+                //console.log(this.time);
+                var to = destinations[j];
+              }
+            }
+          }
+          this.cd.detectChanges();
+        });
+
       })
     }
 
     async getDataFromStorage() {
       return await this.storage.get('obj');
     }
+
+
 
   ngOnInit() {
     /**/
@@ -151,8 +224,6 @@ export class CourseOngoingPage implements OnInit {
     this.getCurrentLocation();
     /**/
     //GET DISTANCE AND TIME
-    this.distance = 280;
-    this.time = 3;
   }
 
   async displayLoader() {
@@ -238,8 +309,8 @@ export class CourseOngoingPage implements OnInit {
 
     let end = new google.maps.Marker({
       position: {
-        lat: this.currLat,
-        lng: this.currLon,
+        lat: this.originLat,
+        lng: this.originLon,
       },
       icon: this.iconBase + "green-flag.png",
       map: this.map
@@ -280,7 +351,6 @@ export class CourseOngoingPage implements OnInit {
 
   callbackDistance(response, status) {
     if (status == 'OK') {
-      console.log(response);
       var origins = response.originAddresses;
       var destinations = response.destinationAddresses;
   
@@ -288,18 +358,16 @@ export class CourseOngoingPage implements OnInit {
         var results = response.rows[i].elements;
         for (var j = 0; j < results.length; j++) {
           var element = results[j];
-          console.log(element);
-          var distance = element.distance.text;
-          console.log(distance);
-          var duration = element.duration.text;
-          console.log(duration);
+          this.distance = element.distance.text;
+          this.time = element.duration.text;
+          console.log(this.distance);
           var from = origins[i];
-          console.log(from);
+          console.log(this.time);
           var to = destinations[j];
-          console.log(to);
         }
       }
     }
+    //this.cd.detectChanges();
   }
 
   addMarker(marker: google.maps.Marker) {
