@@ -40,9 +40,6 @@ export class CourseOngoingPage implements OnInit {
         if(this.router.getCurrentNavigation().extras.state) {
           this.lon = this.router.getCurrentNavigation().extras.state.lon;
           this.lat = this.router.getCurrentNavigation().extras.state.lat;
-          console.log("LOCATION")
-          console.log(this.lat);
-          console.log(this.lon);
         }
       })
       this.directionService = new google.maps.DirectionsService();
@@ -69,7 +66,6 @@ export class CourseOngoingPage implements OnInit {
           .catch(err => {
             // close loader and return Null
             loader.dismiss();
-            console.log(err);
             return null;
           });
       });
@@ -103,13 +99,11 @@ export class CourseOngoingPage implements OnInit {
   private async getCurrentLocation(): Promise<any> {
     const isAvailable: boolean = Capacitor.isPluginAvailable("Geolocation");
     if (!isAvailable) {
-      console.log("ERR: Plugin is not available");
       return of(new Error("ERR: Plugin not available"));
     }
     const POSITION = Plugins.Geolocation.getCurrentPosition()
       // handle Capacitor errors
       .catch(err => {
-        console.log("ERR", err);
         return new Error(err.message || "customized message");
       });
     this.coordinates = fromPromise(POSITION).pipe(
@@ -125,7 +119,6 @@ export class CourseOngoingPage implements OnInit {
       lat: this.lat,
       lng: this.lon
     }
-    console.log(POSITION);
     this.map = new google.maps.Map(
       document.getElementById("map2"),
       {
@@ -195,15 +188,10 @@ export class CourseOngoingPage implements OnInit {
         var results = response.rows[i].elements;
         for (var j = 0; j < results.length; j++) {
           var element = results[j];
-          console.log(element);
           var distance = element.distance.text;
-          console.log(distance);
           var duration = element.duration.text;
-          console.log(duration);
           var from = origins[i];
-          console.log(from);
           var to = destinations[j];
-          console.log(to);
         }
       }
     }

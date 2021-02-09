@@ -59,19 +59,9 @@ export class MapComponent implements AfterViewInit {
     }
   }
 
-  
-  onAutocompleteSelected(result: PlaceResult) {
-    console.log('onAutocompleteSelected: ', result);
-  }
-
   onLocationSelected(location: Location) {
-    console.log('onLocationSelected: ', location);
     this.latitude = location.latitude;
     this.longitude = location.longitude;
-  }
-
-  onGermanAddressMapped($event: GermanAddress) {
-    console.log('onGermanAddressMapped', $event);
   }
 
   ngAfterViewInit() {

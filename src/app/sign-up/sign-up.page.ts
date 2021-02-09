@@ -38,15 +38,12 @@ export class SignUpPage implements OnInit {
 
   onSignup() {
     this.spinnerShown = true;
-    console.log(this.signUp.value);
     this.authService.register(this.credentials)
     .subscribe((data: any) => {
       this.spinnerShown = false;
-      console.log(data)
     }),
     err => {
       this.spinnerShown = false;
-      console.log("err");
     }
   }
 

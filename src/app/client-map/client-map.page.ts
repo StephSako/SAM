@@ -81,13 +81,11 @@ export class ClientMapPage implements OnInit {
   private async getCurrentLocation(): Promise<any> {
     const isAvailable: boolean = Capacitor.isPluginAvailable("Geolocation");
     if (!isAvailable) {
-      console.log("ERR: Plugin is not available");
       return of (new Error("ERR: Plugin not available"));
     }
     const POSITION = Plugins.Geolocation.getCurrentPosition()
     // handle Capacitor errors
       .catch(err => {
-        console.log("ERR", err);
         return new Error(err.message || "customized message");
       });
     this.coordinates = fromPromise(POSITION).pipe(

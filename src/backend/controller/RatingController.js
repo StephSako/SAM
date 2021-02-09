@@ -9,7 +9,6 @@ exports.add = (req, res) => {
     // TODO Define global json response
     jwt.verify(req.headers['authorization'], process.env.SECRET_KEY, function (err, decoded) {
         if (err) {
-            console.log(err)
             res.send("Vous n'etes pas connecté");
             return;
         }
@@ -20,12 +19,9 @@ exports.add = (req, res) => {
             comment: req.body.comment
         }
     
-        console.log(ratingData)
-    
         Rating.create(ratingData).then(rating => {
             res.send("Note ajoutée");
         }).catch(err => {
-            console.log(err);
             res.send("Erreur lors de l'ajout de la note");
         })
 

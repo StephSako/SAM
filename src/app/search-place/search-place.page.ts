@@ -72,13 +72,11 @@ export class SearchPlacePage implements OnInit {
   private async getCurrentLocation(): Promise<any> {
     const isAvailable: boolean = Capacitor.isPluginAvailable("Geolocation");
     if (!isAvailable) {
-      console.log("ERR: Plugin is not available");
       return of (new Error("ERR: Plugin not available"));
     }
     const POSITION = Plugins.Geolocation.getCurrentPosition()
     // handle Capacitor errors
       .catch(err => {
-        console.log("ERR", err);
         return new Error(err.message || "customized message");
       });
     this.coordinates = fromPromise(POSITION).pipe(
@@ -107,12 +105,7 @@ export class SearchPlacePage implements OnInit {
     this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(autocomplete);
   }
 
-  onAutocompleteSelected(result: PlaceResult) {
-    console.log('onAutocompleteSelected: ', result);
-  }
-
   onLocationSelected(location: Location) {
-    console.log('onLocationSelected: ', location);
     this.latitude = location.latitude;
     this.longitude = location.longitude;
     let naviguationExtras: NavigationExtras = {state: {lat: this.latitude, lon: this.longitude}}

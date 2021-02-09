@@ -22,7 +22,6 @@ export class AppComponent {
   ) {
     this.initializeApp();
     this.user = this.authService.getUserDetails();
-    console.log(sessionStorage.getItem('connected'))
   }
 
   getSession() {
@@ -43,7 +42,6 @@ export class AppComponent {
     this.router.navigate(['/history'])
   }
   goToParams() {
-    console.log("Redirection vers les paramètres ?")
   }
   signOff() {
     sessionStorage.setItem("connected","false")

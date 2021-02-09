@@ -34,10 +34,8 @@ export class LoginPage implements OnInit {
   onLogin() {
     //var self = this
     this.spinnerShown = true;
-    console.log(this.login.value);
     this.authService.login(this.credentials)
     .subscribe((data: any) => {
-      console.log(data);
       if(data.success) {
         //self.user = this.authService.getUserDetails();
         //sessionStorage.setItem('firstname', self.user.firstname)

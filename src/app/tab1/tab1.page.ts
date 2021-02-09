@@ -64,7 +64,6 @@ export class Tab1Page implements OnInit {
         return this.getCurrentLocation()
           .then(position => {
             //close loader and return position
-            console.log(position);
             loader.dismiss();
             this.lat = position.coords.latitude;
             this.lon = position.coords.longitude;
@@ -106,29 +105,22 @@ export class Tab1Page implements OnInit {
   private async getCurrentLocation(): Promise<any> {
     const isAvailable: boolean = Capacitor.isPluginAvailable("Geolocation");
     if (!isAvailable) {
-      console.log("ERR: Plugin is not available");
       return of(new Error("ERR: Plugin not available"));
     }
     const POSITION = Plugins.Geolocation.getCurrentPosition()
       // handle Capacitor errors
       .catch(err => {
-        console.log("ERR", err);
         return new Error(err.message || "customized message");
       });
     this.coordinates = fromPromise(POSITION).pipe(
-      switchMap((data: any) => of(data.coords)),
-      tap(data => console.log(data))
+      switchMap((data: any) => of(data.coords))
     );
     return POSITION;
   }
 
   placeDriverMarker() {
-    console.log("drivers");
-    console.log(this.drivers);
     this.drivers.forEach(driver => {
-      //console.log(driver);
       if ((driver.longitude_pos) && (driver.latitude_pos)) {
-        console.log(driver.latitude_pos);
         let msg = "<b>" + driver.firstname + " " + driver.lastname + " à 3km"
         let info = new google.maps.InfoWindow({
           content: msg
@@ -166,12 +158,7 @@ export class Tab1Page implements OnInit {
 
   }
 
-  onAutocompleteSelected(result: PlaceResult) {
-    console.log('onAutocompleteSelected: ', result);
-  }
-
   onLocationSelected(location: Location) {
-    console.log('onLocationSelected: ', location);
     this.latitude = location.latitude;
     this.longitude = location.longitude;
     const self = this;
@@ -183,9 +170,4 @@ export class Tab1Page implements OnInit {
     this.map.setCenter(pt);
     this.map.setZoom(12);
   }
-
-  onGermanAddressMapped($event: GermanAddress) {
-    console.log('onGermanAddressMapped', $event);
-  }
-
 }

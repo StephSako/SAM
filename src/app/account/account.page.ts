@@ -26,7 +26,6 @@ export class AccountPage implements OnInit {
 
   ngOnInit() {
     this.user = this.authService.getUserDetails();
-    console.log(this.user);
     this.formGroup.controls.firstNameForm.setValue(this.user.firstname);
     this.formGroup.controls.lastNameForm.setValue(this.user.lastname);
     this.formGroup.controls.emailForm.setValue(this.user.email);
@@ -65,7 +64,6 @@ export class AccountPage implements OnInit {
 
   validate() {
     //RECUPERATION DES FORMS
-    console.log(this.user);
     this.authService.editUser(this.user)
     .subscribe((data: any) => {
       let snackBarRef = this.snackBar.open(data.message);

@@ -85,7 +85,6 @@ export class ClientHomePage implements OnInit {
   }
 
   goback() {
-    console.log("retour à la page précédente");
   }
 
   redirect() {
@@ -114,29 +113,22 @@ export class ClientHomePage implements OnInit {
   private async getCurrentLocation(): Promise<any> {
     const isAvailable: boolean = Capacitor.isPluginAvailable("Geolocation");
     if (!isAvailable) {
-      console.log("ERR: Plugin is not available");
       return of (new Error("ERR: Plugin not available"));
     }
     const POSITION = Plugins.Geolocation.getCurrentPosition()
     // handle Capacitor errors
       .catch(err => {
-        console.log("ERR", err);
         return new Error(err.message || "customized message");
       });
     this.coordinates = fromPromise(POSITION).pipe(
-      switchMap((data: any) => of(data.coords)),
-      tap(data => console.log(data))
+      switchMap((data: any) => of(data.coords))
     );
     return POSITION;
   }
 
   placeDriverMarker() {
-    console.log("drivers");
-    console.log(this.drivers);
     this.drivers.forEach(driver => {
-      //console.log(driver);
       if ((driver.longitude_pos) && (driver.latitude_pos)) {
-        console.log(driver.latitude_pos);
         let msg = "<b>" + driver.firstname + " " + driver.lastname + " à 3km <br/>"
         let info = new google.maps.InfoWindow({
           content: msg

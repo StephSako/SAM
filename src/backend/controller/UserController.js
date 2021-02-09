@@ -13,7 +13,6 @@ process.env.SECRET_KEY = 'secret'
 
 // REGISTER
 exports.register = (req, res) => {
-    console.log(req.body);
     const userData = {
         firstname: req.body.firstname_user,
         lastname: req.body.lastname_user,
@@ -35,7 +34,6 @@ exports.register = (req, res) => {
 
 // LOGIN
 exports.login = (req, res) => {
-    console.log(req.body);
     User.findOne({
         where: {
             [Op.or]: [
@@ -70,7 +68,6 @@ exports.login = (req, res) => {
         }
 
     }).catch(err => {
-        console.log(err);
         res.status(500).send({
             success: false,
             title: "Connexion",
