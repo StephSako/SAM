@@ -4,15 +4,47 @@
   </ion-toolbar>
 </ion-header>-->
 <div id="map2"></div>
+<div style="position: absolute; top: 45px; width: 100%; background-color: #FFFFFF;" *ngIf="searching">
+<h3 style="text-align: center; margin-top: 10px; font-size: 25px;">En attente d'un SAM</h3>
+<ion-progress-bar type="indeterminate"></ion-progress-bar>
+</div>
+<div style="position: absolute; top: 60px; width: 100%; background-color: #FFFFFF;" *ngIf="!searching">
+  <ion-item>
+    <input type="text" value="{{ clientAddress }}" matInput [readOnly]=true/>
+    <ion-icon name="pin-outline" slot="start"></ion-icon>
+  </ion-item>
+
+  <ion-item>
+    <input type="text" value="{{ address }}" matInput [readOnly]=true/>
+    <ion-icon name="pin" slot="start"></ion-icon>
+  </ion-item>
+</div>
+
 <div style="position: absolute; bottom: 0px; width: 100%" class="footer" id="footer">
   <ion-grid>
     <ion-row>
       <ion-col size="4">
         <ion-img src="https://i.imgur.com/EMx6uVW.png" style="width:66%;"></ion-img>
       </ion-col>
-      <ion-col size="6">
-        <p>Votre chauffeur arrive !</p>
-        <p><i>{{ distance }}m - {{ time }}min</i></p>
+      <ion-col size="6" *ngIf="searching">
+        <ion-button>
+          Annuler la course
+        </ion-button>
+      </ion-col>
+      <ion-col size="6" *ngIf="!searching && !courseStarted">
+        <div style="font-size: 20px;">
+         <p>Votre chauffeur {{driver.firstname}} {{ driver.lastname }} arrive !</p><br/>
+        <p *ngIf="!arrived">{{ distance }} - {{ time }}</p>
+        </div>
+
+      </ion-col>
+
+      <ion-col size="6" *ngIf="courseStarted">
+        <div style="font-size: 20px;">
+         <p>La course avec votre chauffeur {{driver.firstname}} {{ driver.lastname }} a commencé !</p><br/>
+        <p *ngIf="courseStarted">{{ distance }} - {{ time }}</p>
+        </div>
+
       </ion-col>
     </ion-row>
   </ion-grid>

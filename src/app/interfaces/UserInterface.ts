@@ -9,6 +9,8 @@ export interface UserInterface {
     role_user_id: number;
     email: string;
     phone_number: string;
+    latitude_pos: number;
+    longitude_pos: number;
     profile_pic_name: string;
     exp: number;
     iat: number;

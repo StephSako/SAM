@@ -1,9 +1,14 @@
-const express = require('express')
+const app = require('express')()
+const http = require('http').createServer(app);
+options={
+  cors:true,
+ }
+const io = require('socket.io')(http, options);
+const notif = require('./src/backend/notif')(io)
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const cors = require('cors')
 const session = require('express-session')
-const app = express()
 const Role = require("./src/backend/model/Role")
 const User = require("./src/backend/model/User")
 const Ride = require("./src/backend/model/Ride")
@@ -100,6 +105,6 @@ let RatingRoute = require('./src/backend/routes/rating.route')
 app.use('/api/rating', RatingRoute)
 
 let port = process.env.PORT || 4000
-app.listen(port, function () {
+http.listen(port, function () {
     console.log('Express server listening on port ' + port)
 })

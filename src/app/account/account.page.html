@@ -42,4 +42,13 @@
           <ion-button color="tertiary" expand="block" shape="round" type="submit"  [disabled]="formGroup.invalid">Modifier</ion-button>
         </form>
         </div>
+        <ionic5-star-rating #rating 
+        activeIcon = "star"
+        defaultIcon = "star-outline"
+        activeColor = "#ffff00"
+        defaultColor = "#aaaaaa"
+        readonly = "false"
+        fontSize = "32px"
+        (ratingChanged)="logRatingChange($event)">
+    </ionic5-star-rating>
 </ion-content>

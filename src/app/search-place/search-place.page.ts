@@ -1,11 +1,12 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Location, Appearance, GermanAddress } from '@angular-material-extensions/google-maps-autocomplete';
 import PlaceResult = google.maps.places.PlaceResult;
-import { NavigationExtras, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Observable, of, from as fromPromise } from 'rxjs';
 import { tap, map, switchMap } from 'rxjs/operators';
 import { Capacitor, Plugins, GeolocationPosition } from '@capacitor/core';
 import { LoadingController, AlertController } from '@ionic/angular';
+import { DriverData } from '../tab1/driver-data.model';
 
 @Component({
   selector: 'app-search-place',
@@ -20,11 +21,27 @@ export class SearchPlacePage implements OnInit {
   public lon;
   public bounds;
   public map: google.maps.Map;
+  private driver: DriverData;
+  private clientAdress : string;
+  private originLat;
+  private originLon;
 
   public coordinates: Observable<GeolocationPosition>;
   @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef
 
-  constructor(private router:Router, public loading: LoadingController, public alertCtrl: AlertController) { }
+  constructor(private router:Router, 
+    public loading: LoadingController, 
+    public alertCtrl: AlertController,
+    private route: ActivatedRoute) {
+      this.route.queryParams.subscribe(params => {
+        if(this.router.getCurrentNavigation().extras.state) {
+          this.driver = this.router.getCurrentNavigation().extras.state.driver;
+          this.clientAdress = this.router.getCurrentNavigation().extras.state.clientAddress;
+          this.originLat = this.router.getCurrentNavigation().extras.state.originLat;
+          this.originLon = this.router.getCurrentNavigation().extras.state.originLon;
+        }
+      })
+    }
 
   ngOnInit() {
         /**/
@@ -36,6 +53,7 @@ export class SearchPlacePage implements OnInit {
           .then(position => {
             //close loader and return position
             loader.dismiss();
+            console.log(position);
             this.lat = position.coords.latitude;
             this.lon = position.coords.longitude;
             this.initMap();
@@ -102,6 +120,27 @@ export class SearchPlacePage implements OnInit {
     );
     const autocomplete = document.getElementById("autocomplete");
     this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(autocomplete);
+  }
+
+  onAutocompleteSelected(result: PlaceResult) {
+    console.log('onAutocompleteSelected: ', result);
+    this.latitude = result.geometry.location.lat();
+    this.longitude = result.geometry.location.lng();
+    console.log(this.latitude);
+    console.log(this.longitude);
+
+    let naviguationExtras: NavigationExtras = {
+      state: {
+        lat: this.latitude, 
+        lon: this.longitude, 
+        driver: this.driver, 
+        address: result.formatted_address,
+        clientAddress: this.clientAdress,
+        originLat: this.originLat,
+        originLon: this.originLon
+      }
+    }
+    this.router.navigate(['/course-ongoing'], naviguationExtras);
   }
 
   onLocationSelected(location: Location) {

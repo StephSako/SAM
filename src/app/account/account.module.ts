@@ -19,6 +19,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { FormBuilder, FormGroup , Validators , FormControl } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { StarRatingModule } from 'ionic5-star-rating';
 
 
 @NgModule({
@@ -36,7 +37,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatIconModule,
     MatProgressSpinnerModule,
     HttpClientModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    StarRatingModule
   ],
   declarations: [AccountPage]
 })

@@ -1,48 +1,47 @@
-<ion-content padding>
-  <div #mapElement class="mapdriver"></div>
-  <app-map *ngIf="(coordinates|async) as coords" [coords]="coords"></app-map><!--
-  <div style="position: absolute; bottom: 0px; width: 100%" class="footer">
-    <ion-grid>
-      <ion-row>
-        <ion-col size="4">
-          <ion-img src="https://i.imgur.com/EMx6uVW.png" style="width:66%;"></ion-img>
-        </ion-col>
-        <ion-col size="3">
-          <p>Client</p>
-          <p><i>{{ distance }}m - {{ time }}min</i></p>
-          <br>
-        </ion-col>
-        <ion-col size="2">
-          <ion-button color="primary" shape="round" >Client récupéré</ion-button >
-          <br>
-          <ion-button color="primary" shape="round" >Client rentré</ion-button >
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </div>-->
-  <div style="position: absolute; bottom: 0px; width: 100%;height:18%;" class="footer">
-    <ion-grid>
-      <ion-row>
-        <ion-col size="3">
-          <ion-img src="https://i.imgur.com/EMx6uVW.png" style="width:100%;"></ion-img>
-        </ion-col>
-        <ion-col size="2">
-          <p>Client</p>
-          <p><i>{{ distance }}m - {{ time }}min</i></p>
-          <br>
-        </ion-col>
-        <ion-col size="4">
-          <ion-button color="primary" shape="round" >Client récupéré</ion-button >
-          <br>
-          <ion-button color="primary" shape="round" >Client rentré</ion-button >
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-    </div>
-</ion-content>
-<!--<div id="mapdriver"></div>
-<div style="position: absolute; bottom: 0px; width: 100%" class="footer" id="footerdriver">
+<div id="mapdriver"></div>
+<div style="position: absolute; top: 60px; width: 100%; background-color: #FFFFFF;" *ngIf="courseStarted">
+  <ion-item>
+    <input type="text" value="{{ start }}" matInput [readOnly]=true/>
+    <ion-icon name="pin-outline" slot="start"></ion-icon>
+  </ion-item>
+
+  <ion-item>
+    <input type="text" value="{{ dest }}" matInput [readOnly]=true/>
+    <ion-icon name="pin" slot="start"></ion-icon>
+  </ion-item>
+</div>
+<div style="position: absolute; bottom: 0px; width: 100%" class="footer" >
   <ion-grid>
+    <ion-row>
+      <ion-col size="4">
+        <ion-img src="https://i.imgur.com/EMx6uVW.png" style="width:66%;"></ion-img>
+      </ion-col>
+      <ion-col size="8">
+        <h2 *ngIf="!isOnline && !courseStarted">Vous êtes hors ligne </h2>
+        
+        <h2 *ngIf="isOnline && !courseStarted">Vous êtes en ligne </h2>
+        <p *ngIf="isOnline && !courseStarted" style="font-size: 20px;">En attente d'un client</p>
+        <div innerHTML="{{ instructions }} - {{ currDistance }} - {{ currDuration }}"></div>
+
+        <br>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-list style="text-align:center;" *ngIf="!isOnline && !isLoading && !courseStarted">
+    <ion-button  style="text-align: center;" size="large" color="secondary" (click)="connectDriver()">Go</ion-button>
+  </ion-list>
+  <ion-list style="text-align:center;" *ngIf="isLoading && !courseStarted">
+    <ion-spinner name="crescent" ></ion-spinner>
+  </ion-list>
+  <ion-list style="text-align:center;" *ngIf="isOnline && !isLoading && !courseStarted">
+    <ion-button style="text-align: center;" size="large" color="secondary" (click)="disconnectDriver()">Hors ligne</ion-button>
+  </ion-list>
+  <ion-list style="text-align:center;" *ngIf="driverArrived">
+    <ion-button style="text-align: center;" size="large" color="secondary" (click)="startCourse()">Commencer la course</ion-button>
+  </ion-list>
+</div>
+
+  <!--<ion-grid>
     <ion-row>
       <ion-col size="4">
         <ion-img src="https://i.imgur.com/EMx6uVW.png" style="width:66%;"></ion-img>
@@ -58,5 +57,4 @@
         <ion-button color="primary" shape="round">Client rentré      </ion-button>
       </ion-col>
     </ion-row>
-  </ion-grid>
-</div>-->
+  </ion-grid>-->

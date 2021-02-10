@@ -97,6 +97,7 @@ exports.login = (req, res) => {
                 let token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
                     expiresIn: 1440
                 })
+                console.log(user.dataValues);
                 res.json({
                     success: true,
                     token: token
