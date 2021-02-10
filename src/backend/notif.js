@@ -51,6 +51,12 @@ module.exports = (io) => {
             console.log(drivers)
         });
 
+        //Chat event
+
+        socket.on('send-message', (message) => {
+            io.emit('newMessage', {text: message.text, username: message.username})
+        })
+
         /**
          * Manage course
          */
@@ -88,8 +94,6 @@ module.exports = (io) => {
                     io.to("courseRoom").emit('step', stepPoints[key]);
                     /*io.to(socket_id).emit("step", stepPoints[key]);
                     io.to(socket_id_client).emit("step", stepPoints[key]);*/
-                    console.log("it");
-                    console.log(it);
                     if(Object.keys(stepPoints).length == it) {
                         if(stepPoints[key].endRoute) {
                             io.to("courseRoom").emit('courseFinished');
