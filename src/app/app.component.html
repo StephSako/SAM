@@ -1,3 +1,54 @@
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<script
+  src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&libraries=&v=weekly"
+  defer
+></script>
+
+
 <ion-app>
+  <ion-toolbar color="primary" *ngIf="getSession() == 'true'">
+    <ion-buttons slot="start">
+      <ion-menu-button autoHide="false"></ion-menu-button>
+  
+    </ion-buttons>
+    <ion-buttons slot="secondary">
+      <ion-button [routerLink]="['/account']">
+        <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title><span *ngIf="user">{{ user.firstname | titlecase }} {{ user.lastname | uppercase}}</span></ion-title>
+  </ion-toolbar>
+  
+  <ion-menu side="start" menuId="first" contentId="main">
+    <ion-header>
+      <ion-toolbar color="primary">
+      </ion-toolbar>
+    </ion-header>
+    <ion-content id="main">
+      <ion-menu-toggle>
+        <ion-list>
+          <ion-item detail>
+            <ion-button fill="clear" (click)="goToClientHome()">Accueil client</ion-button>
+          </ion-item>
+          <ion-item detail>
+            <ion-button fill="clear" (click)="goToDriverHome()">Accueil chauffeur</ion-button>
+          </ion-item>
+          <ion-item detail>
+            <ion-button fill="clear" (click)="goToAccount()">Mon compte</ion-button>
+          </ion-item>
+          <ion-item detail>
+            <ion-button fill="clear" (click)="goToHistory()">Historique des courses</ion-button>
+          </ion-item>
+          <ion-item detail>
+            <ion-button fill="clear" (click)="goToParams()">paramètres (inutilisé)</ion-button>
+          </ion-item>
+          <ion-item detail>
+            <ion-button fill="clear" (click)="authService.logout()">Déconnexion</ion-button>
+            <ion-button fill="clear" (click)="signOff()">Déconnexion</ion-button>
+          </ion-item>
+        </ion-list>
+    </ion-menu-toggle>
+    </ion-content>
+  </ion-menu>
   <ion-router-outlet></ion-router-outlet>
 </ion-app>

@@ -1,0 +1,54 @@
+<ion-content>
+  <div style="margin-top:20%; text-align: center">
+        <ion-img *ngIf="!urlProfilePic; else profilePicPresent" src="https://i.imgur.com/EMx6uVW.png" style="height:100px;"></ion-img>
+        <ng-template #profilePicPresent>
+          <img [src]="urlProfilePic" alt="profile pic" class="profile_picture">
+        </ng-template>
+
+        <input
+          style="display: none"
+          type="file" (change)="onFileChanged($event)"
+          #fileInput accept="image/png, image/jpeg">
+        <ion-button color="light" expand="block" shape="round" (click)="fileInput.click()" class="btn_profile_picture">Image de profil</ion-button>
+        <form (ngSubmit)="validate()" [formGroup]="formGroup">
+          <mat-error *ngIf="this.formGroup.controls.firstNameForm.invalid && formGroup.controls.firstNameForm.touched">
+            {{  getErrorMessageFirstname() }}
+          </mat-error>
+          <ion-item color="light" expand="block" shape="round" fill="outline">
+            <ion-input [(ngModel)]="user.firstname" type="text" formControlName="firstNameForm" placeholder="Prénom"></ion-input>
+          </ion-item>
+          <br>
+          <mat-error *ngIf="this.formGroup.controls.lastNameForm.invalid && formGroup.controls.lastNameForm.touched">
+            {{  getErrorMessageLastname() }}
+          </mat-error>
+          <ion-item color="light" expand="block" shape="round" fill="outline">
+            <ion-input [(ngModel)]="user.lastname" type="text" formControlName="lastNameForm" placeholder="Nom"></ion-input>
+          </ion-item>
+          <br>
+          <mat-error *ngIf="this.formGroup.controls.emailForm.invalid && formGroup.controls.emailForm.touched">
+            {{  getErrorMessageEmail() }}
+          </mat-error>
+          <ion-item color="light" expand="block" shape="round" fill="outline">
+            <ion-input [(ngModel)]="user.email" type="text" formControlName="emailForm" placeholder="Email"></ion-input>
+          </ion-item>
+          <br>
+          <mat-error *ngIf="this.formGroup.controls.phoneNumberForm.invalid && formGroup.controls.phoneNumberForm.touched">
+            {{  getErrorMessagePhone() }}
+          </mat-error>
+          <ion-item color="light" expand="block" shape="round" fill="outline">
+            <ion-input [(ngModel)]="user.phone_number" type="text" formControlName="phoneNumberForm" placeholder="Téléphone"></ion-input>
+          </ion-item>
+          <br>
+          <ion-button color="tertiary" expand="block" shape="round" type="submit"  [disabled]="formGroup.invalid">Modifier</ion-button>
+        </form>
+        </div>
+        <ionic5-star-rating #rating 
+        activeIcon = "star"
+        defaultIcon = "star-outline"
+        activeColor = "#ffff00"
+        defaultColor = "#aaaaaa"
+        readonly = "false"
+        fontSize = "32px"
+        (ratingChanged)="logRatingChange($event)">
+    </ionic5-star-rating>
+</ion-content>

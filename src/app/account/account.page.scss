@@ -1,0 +1,27 @@
+ion-content {
+    --background: linear-gradient(#4adce6, #a1e9ef) fixed;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+ion-item {
+  border-radius: 20px;
+  margin: 2px;
+}
+
+mat-error {
+  margin: 10px;
+}
+
+.profile_picture {
+  width:250px;
+  height:250px;
+  object-fit:cover;
+  border-radius: 50%
+}
+
+.btn_profile_picture {
+  margin-bottom: 20px;
+}
