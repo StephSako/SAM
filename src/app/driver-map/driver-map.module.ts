@@ -9,13 +9,17 @@ import { DriverMapPageRoutingModule } from './driver-map-routing.module';
 import { DriverMapPage } from './driver-map.page';
 import { SharedModule } from '../shared/shared.module';
 
+import { ModalController } from '@ionic/angular';
+import { ChatPageModule } from '../chat/chat.module';
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
     DriverMapPageRoutingModule,
-    SharedModule
+    SharedModule,
+    ChatPageModule
   ],
   declarations: [DriverMapPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

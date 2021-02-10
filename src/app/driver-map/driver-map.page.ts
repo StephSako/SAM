@@ -2,11 +2,12 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Capacitor, Plugins, GeolocationPosition } from '@capacitor/core';
 import { Observable, of, from as fromPromise } from 'rxjs';
 import { tap, map, switchMap } from 'rxjs/operators';
-import { LoadingController, AlertController } from '@ionic/angular';
+import { LoadingController, AlertController, ModalController } from '@ionic/angular';
 import { Socket } from 'ngx-socket-io';
 import { AuthService } from '../services/auth.service';
 import { UserInterface } from '../interfaces/userInterface';
 import { LatLng } from '@ionic-native/google-maps';
+import { ChatPage } from '../chat/chat.page';
 
 const { Toast, Geolocation } = Capacitor.Plugins;
 
@@ -56,6 +57,7 @@ export class DriverMapPage implements OnInit {
   private directionsRenderer;
   private startMarker;
   private endMarker;
+  public messages = [];
 
 
   @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef
@@ -67,7 +69,8 @@ export class DriverMapPage implements OnInit {
   constructor(public loading: LoadingController,
     public alertCtrl: AlertController,
     private socket: Socket,
-    private authService: AuthService) {
+    private authService: AuthService,
+    public modalCtrl: ModalController) {
       this.realCourseStart = false;
       this.driverArrived = false;
       this.start = "Votre position"
@@ -259,6 +262,16 @@ export class DriverMapPage implements OnInit {
     })
 
     await alert.present();
+  }
+
+  async chat() {
+    const modal = await this.modalCtrl.create({
+      component: ChatPage,
+      componentProps: {user: this.driver}
+      
+    })
+
+    return await modal.present();
   }
 
   startCourse() {

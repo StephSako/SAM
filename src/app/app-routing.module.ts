@@ -55,7 +55,11 @@ const routes: Routes = [
   {
     path: 'search-place',
     loadChildren: () => import('./search-place/search-place.module').then( m => m.SearchPlacePageModule)
+  },  {
+    path: 'chat',
+    loadChildren: () => import('./chat/chat.module').then( m => m.ChatPageModule)
   }
+
 
 
   

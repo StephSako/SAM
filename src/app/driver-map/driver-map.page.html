@@ -39,6 +39,11 @@
   <ion-list style="text-align:center;" *ngIf="driverArrived">
     <ion-button style="text-align: center;" size="large" color="secondary" (click)="startCourse()">Commencer la course</ion-button>
   </ion-list>
+  <ion-list *ngIf="courseStarted">
+    <ion-button (click)="chat()">
+      Chat
+    </ion-button>
+  </ion-list>
 </div>
 
   <!--<ion-grid>

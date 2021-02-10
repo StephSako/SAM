@@ -8,6 +8,8 @@ import { CourseOngoingPageRoutingModule } from './course-ongoing-routing.module'
 
 import { CourseOngoingPage } from './course-ongoing.page';
 import { SharedModule } from '../shared/shared.module';
+import { ChatPage } from '../chat/chat.page';
+import { ChatPageModule } from '../chat/chat.module';
 
 @NgModule({
   imports: [
@@ -15,7 +17,8 @@ import { SharedModule } from '../shared/shared.module';
     FormsModule,
     IonicModule,
     CourseOngoingPageRoutingModule,
-    SharedModule
+    SharedModule,
+    ChatPageModule
   ],
   declarations: [CourseOngoingPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

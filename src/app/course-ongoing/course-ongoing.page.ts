@@ -10,6 +10,8 @@ import { UserInterface } from '../interfaces/userInterface';
 import { AuthService } from '../services/auth.service';
 import { Storage } from '@ionic/storage';
 import { ChangeDetectorRef } from '@angular/core';
+import { ModalController } from '@ionic/angular';
+import { ChatPage } from '../chat/chat.page';
 
 const { Toast, Geolocation } = Capacitor.Plugins;
 
@@ -49,6 +51,7 @@ export class CourseOngoingPage implements OnInit {
   public courseStarted;
   public destLat;
   public destLng;
+  public messages = [];
 
 
   public coordinates: Observable<GeolocationPosition>;
@@ -67,7 +70,8 @@ export class CourseOngoingPage implements OnInit {
     private authService: AuthService,
     public alertController: AlertController,
     private cd: ChangeDetectorRef,
-    private storage: Storage) {
+    private storage: Storage,
+    public modalCtrl: ModalController) {
     this.geocoder = new google.maps.Geocoder();
     this.courseStarted = false;
     this.arrived = false;
@@ -219,6 +223,16 @@ export class CourseOngoingPage implements OnInit {
 
   async getDataFromStorage() {
     return await this.storage.get('obj');
+  }
+
+  async chat() {
+    const modal = await this.modalCtrl.create({
+      component: ChatPage,
+      componentProps: {user: this.client}
+      
+    })
+
+    return await modal.present();
   }
 
 

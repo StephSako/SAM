@@ -16,6 +16,8 @@ import {AgmCoreModule} from '@agm/core';
 import {MatGoogleMapsAutocompleteModule} from '@angular-material-extensions/google-maps-autocomplete';
 import { IonicStorageModule } from '@ionic/storage';
 
+import {ChatPageModule} from './chat/chat.module'
+
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 
 const config: SocketIoConfig = { url: 'http://localhost:4000', options: {withCredentials: false} };
