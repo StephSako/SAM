@@ -21,6 +21,8 @@ export class DriverMapPage implements OnInit {
   time: number = -1;
 
   public coordinates: Observable<GeolocationPosition>;
+  public realCourseStart;
+  public driverArrived;
   public lat;
   public lon;
   public bounds;
@@ -51,6 +53,10 @@ export class DriverMapPage implements OnInit {
   private currStepLng;
   private originLat;
   private originLon;
+  private directionsRenderer;
+  private startMarker;
+  private endMarker;
+
 
   @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef
   public defaultPos: {
@@ -62,6 +68,8 @@ export class DriverMapPage implements OnInit {
     public alertCtrl: AlertController,
     private socket: Socket,
     private authService: AuthService) {
+      this.realCourseStart = false;
+      this.driverArrived = false;
       this.start = "Votre position"
       this.instructions = "";
       this.courseStarted = false;
@@ -88,22 +96,17 @@ export class DriverMapPage implements OnInit {
     });
 
     socket.fromEvent('driverCourse').subscribe((data: any) => {
-      console.log(data)
       this.clientAddress = data.clientAddress;
       this.dest = this.clientAddress;
       this.destinationAddress = data.address;
       this.client = data.client;
       this.originLon = data.originLon;
       this.originLat = data.originLat;
-      console.log("ORIGIN");
-      console.log(this.originLon);
-      console.log(this.originLat);
       this.launchAlert(data);
 
     });
 
     socket.fromEvent('step').subscribe((step: any) => {
-      console.log("STEP");
       this.instructions = step.instructions;
       this.currDuration = step.duration;
       this.currDistance = step.distance;
@@ -111,16 +114,23 @@ export class DriverMapPage implements OnInit {
       this.driverMarker.setPosition(newLatLng);
     })
 
+    socket.fromEvent('courseFinished').subscribe((data:any) => {
+      console.log("Course Finished")
+    })
+
+
+
     socket.fromEvent('driverArrived').subscribe((data: any) => {
       this.start = this.clientAddress;
       this.dest = this.destinationAddress;
+      this.driverArrived = true;
+
     })
   }
 
   ngOnInit() {
     /**/
     // start the loader
-    console.log(this.driver)
     this.displayLoader()
       .then((loader: any) => {
         // get position
@@ -130,8 +140,6 @@ export class DriverMapPage implements OnInit {
             loader.dismiss();
             this.lat = position.coords.latitude;
             this.lon = position.coords.longitude;
-            console.log(this.lat);
-            console.log(this.lon);
             this.initMap();
             this.driverMarker = new google.maps.Marker({
               position: {
@@ -173,9 +181,7 @@ export class DriverMapPage implements OnInit {
           this.geocoder.geocode({'address': this.clientAddress}, (results, status) => {
             if(status == 'OK') {
               this.courseStarted = true;
-              console.log("GEOCEODE");
-              console.log(results);
-              let start = new google.maps.Marker({
+              this.startMarker = new google.maps.Marker({
 
                 position: {
                   lat: this.driver.latitude_pos,
@@ -185,7 +191,7 @@ export class DriverMapPage implements OnInit {
                 map: this.map
               });
     
-              let end = new google.maps.Marker({
+              this.endMarker = new google.maps.Marker({
     
                 position: {
                   lat: this.originLat,
@@ -195,25 +201,24 @@ export class DriverMapPage implements OnInit {
                 map: this.map
               });
     
-              let directionsRenderer = new google.maps.DirectionsRenderer({
+              this.directionsRenderer = new google.maps.DirectionsRenderer({
                 preserveViewport: true,
                 suppressMarkers: true,
                 map: this.map
               });
-              directionsRenderer.setMap(this.map);
+              this.directionsRenderer.setMap(this.map);
     
               new google.maps.DistanceMatrixService().getDistanceMatrix({
-                origins: [start.getPosition()],
-                destinations: [end.getPosition()],
+                origins: [this.startMarker.getPosition()],
+                destinations: [this.endMarker.getPosition()],
                 travelMode: google.maps.TravelMode.BICYCLING,
                 avoidHighways: true,
                 avoidTolls: true
               }, this.callbackDistance);
-              console.log("client address")
-              console.log(this.clientAddress)
+
               const request = {
-                origin: start.getPosition(),
-                destination: end.getPosition(),
+                origin: this.startMarker.getPosition(),
+                destination: this.endMarker.getPosition(),
                 avoidHighways: true,
                 avoidTolls: true,
                 travelMode: 'BICYCLING'
@@ -222,11 +227,7 @@ export class DriverMapPage implements OnInit {
               this.directionService.route(request, (result, status) => {
                 if (status == 'OK') {
                   
-                  directionsRenderer.setDirections(result);
-                  console.log("DIRECTION SERVICE")
-                  console.log(result);
-                  console.log("leg");
-                  console.log(result.routes[0].legs[0].steps);
+                  this.directionsRenderer.setDirections(result);
                   let steps = result.routes[0].legs[0].steps;
                   let i = 0;
                   steps.forEach(step => {
@@ -240,13 +241,12 @@ export class DriverMapPage implements OnInit {
                         duration: this.currDuration,
                         instructions: this.currInstruction,
                         latitude: pos.lat(),
-                        longitude: pos.lng()
+                        longitude: pos.lng(),
+                        endRoute: false
                       };
                       this.stepPoints[i] = obj;
                     });
                   });
-                  console.log("STEPPOINT");
-                  console.log(this.stepPoints);
                   this.socket.emit("sendRoute", this.stepPoints, this.driver, this.client);
                 }
               })
@@ -261,9 +261,100 @@ export class DriverMapPage implements OnInit {
     await alert.present();
   }
 
+  startCourse() {
+
+    this.driverArrived = false;
+
+    this.directionsRenderer.setMap(null);
+
+    this.directionsRenderer = new google.maps.DirectionsRenderer({
+      preserveViewport: true,
+      suppressMarkers: true,
+      map: this.map
+    });
+
+    this.endMarker.setMap(null);
+    this.startMarker.setMap(null);
+
+    this.driverMarker.setMap(null);
+
+    this.driverMarker = new google.maps.Marker({
+  
+      position: {
+        lat: this.originLat,
+        lng: this.originLon
+      },
+      icon: this.iconBase + "car.png",
+      map: this.map
+    });
+
+    this.startMarker = new google.maps.Marker({
+  
+      position: {
+        lat: this.originLat,
+        lng: this.originLon
+      },
+      icon: this.iconBase + "green-flag.png",
+      map: this.map
+    });
+
+    this.geocoder.geocode({'address': this.destinationAddress}, (results, status) => {
+      console.log(results);
+      console.log(results[0].geometry.location);
+      this.endMarker = new google.maps.Marker({
+  
+        position: {
+          lat: results[0].geometry.location.lat(),
+          lng: results[0].geometry.location.lng()
+        },
+        icon: this.iconBase + "red-flag.png",
+        map: this.map
+      });
+
+      this.directionsRenderer = new google.maps.DirectionsRenderer({
+        preserveViewport: true,
+        suppressMarkers: true,
+        map: this.map
+      });
+      this.directionsRenderer.setMap(this.map);
+
+      const request = {
+        origin: this.startMarker.getPosition(),
+        destination: this.endMarker.getPosition(),
+        travelMode: 'DRIVING'
+      }
+
+      this.directionService.route(request, (result, status) => {
+        if (status == 'OK') {
+          this.directionsRenderer.setDirections(result);
+          let steps = result.routes[0].legs[0].steps;
+          let i = 0;
+          steps.forEach(step => {
+            this.currDistance = step.distance.text;
+            this.currDuration = step.duration.text;
+            this.currInstruction = step.instructions;
+            step.path.forEach((pos, index) => {
+              i++;
+              var obj = {
+                distance: this.currDistance,
+                duration: this.currDuration,
+                instructions: this.currInstruction,
+                latitude: pos.lat(),
+                longitude: pos.lng(),
+                endRoute: true
+              };
+              this.stepPoints[i] = obj;
+            });
+          });
+          this.socket.emit("sendRoute", this.stepPoints, this.driver, this.client);
+        }
+      })
+
+    })
+  }
+
   callbackDistance(response, status) {
     if (status == 'OK') {
-      console.log(response);
       var origins = response.originAddresses;
       var destinations = response.destinationAddresses;
 
@@ -271,15 +362,10 @@ export class DriverMapPage implements OnInit {
         var results = response.rows[i].elements;
         for (var j = 0; j < results.length; j++) {
           var element = results[j];
-          console.log(element);
           var distance = element.distance.text;
-          console.log(distance);
           var duration = element.duration.text;
-          console.log(duration);
           var from = origins[i];
-          console.log(from);
           var to = destinations[j];
-          console.log(to);
         }
       }
     }

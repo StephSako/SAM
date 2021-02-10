@@ -39,7 +39,7 @@ const config: SocketIoConfig = { url: 'http://localhost:4000', options: {withCre
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    HttpClientModule
+    HttpClientModule,
   ],
   providers: [
     StatusBar,

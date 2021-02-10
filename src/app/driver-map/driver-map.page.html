@@ -21,7 +21,7 @@
         
         <h2 *ngIf="isOnline && !courseStarted">Vous êtes en ligne </h2>
         <p *ngIf="isOnline && !courseStarted" style="font-size: 20px;">En attente d'un client</p>
-        <div innerHTML="{{ instructions }}{{ currDistance }} - {{ currDuration }}"></div>
+        <div innerHTML="{{ instructions }} - {{ currDistance }} - {{ currDuration }}"></div>
 
         <br>
       </ion-col>
@@ -35,6 +35,9 @@
   </ion-list>
   <ion-list style="text-align:center;" *ngIf="isOnline && !isLoading && !courseStarted">
     <ion-button style="text-align: center;" size="large" color="secondary" (click)="disconnectDriver()">Hors ligne</ion-button>
+  </ion-list>
+  <ion-list style="text-align:center;" *ngIf="driverArrived">
+    <ion-button style="text-align: center;" size="large" color="secondary" (click)="startCourse()">Commencer la course</ion-button>
   </ion-list>
 </div>
 

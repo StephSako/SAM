@@ -33,6 +33,10 @@ export class AccountPage implements OnInit {
     this.formGroup.controls.phoneNumberForm.setValue(this.user.phone_number);
   }
 
+  logRatingChange(rating) {
+    console.log(rating);
+  }
+
   getErrorMessageFirstname(): string {
     if(this.formGroup.controls.firstNameForm.hasError('required')) {
       return 'Le champ Prénom est requis';

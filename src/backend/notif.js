@@ -80,17 +80,29 @@ module.exports = (io) => {
             console.log("client socket");
             console.log(socket_id_client);
             let i = 0;
+            let it = 1;
             for(let key in stepPoints) {
                 i++
                 setTimeout(() => {
-                    console.log(stepPoints[key].longitude);
+                    it++
                     io.to("courseRoom").emit('step', stepPoints[key]);
                     /*io.to(socket_id).emit("step", stepPoints[key]);
                     io.to(socket_id_client).emit("step", stepPoints[key]);*/
-
-                }, i * 300)
+                    console.log("it");
+                    console.log(it);
+                    if(Object.keys(stepPoints).length == it) {
+                        if(stepPoints[key].endRoute) {
+                            io.to("courseRoom").emit('courseFinished');
+                        } else {
+                            io.to("courseRoom").emit('driverArrived');
+                        }
+                        
+                    }
+                }, i * 100)
 
             }
+
+            
         });
     })
 }
