@@ -57,6 +57,7 @@ export class ClientHomePage implements OnInit {
       this.lon = this.user.longitude_pos;
       this.markers = [];
       socket.fromEvent('driversMap').subscribe(data => {
+        console.log("DRIVERS");
         this.drivers = data;
         console.log(data);
       });

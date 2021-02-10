@@ -102,6 +102,8 @@ export class CourseOngoingPage implements OnInit {
           originLat: this.originLat,
           originLon: this.originLon
         }
+        console.log("COURSE INFO");
+        console.log(courseInfo)
         this.socket.emit("newCourse", courseInfo);
       } else {
         let objj = this.getDataFromStorage();
@@ -123,6 +125,8 @@ export class CourseOngoingPage implements OnInit {
             originLat: this.originLat,
             originLon: this.originLon
           }
+          console.log("COURSE INFO");
+          console.log(courseInfo)
           this.socket.emit("newCourse", courseInfo);
         })
       }

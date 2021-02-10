@@ -35,6 +35,8 @@ export class SearchPlacePage implements OnInit {
     private route: ActivatedRoute) {
       this.route.queryParams.subscribe(params => {
         if(this.router.getCurrentNavigation().extras.state) {
+          console.log("courseInfo");
+          console.log(this.router.getCurrentNavigation().extras.state)
           this.driver = this.router.getCurrentNavigation().extras.state.driver;
           this.clientAdress = this.router.getCurrentNavigation().extras.state.clientAddress;
           this.originLat = this.router.getCurrentNavigation().extras.state.originLat;
@@ -144,9 +146,5 @@ export class SearchPlacePage implements OnInit {
   }
 
   onLocationSelected(location: Location) {
-    this.latitude = location.latitude;
-    this.longitude = location.longitude;
-    let naviguationExtras: NavigationExtras = {state: {lat: this.latitude, lon: this.longitude}}
-    this.router.navigate(['/course-ongoing'], naviguationExtras);
   }
 }
