@@ -1,4 +1,4 @@
-import { RoleUserInterface } from './roleUser';
+import { RoleUserInterface } from './RoleUser';
 
 export interface UserInterface {
     id_user: number;

@@ -3,14 +3,14 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { TokenPayloadLogin, TokenPayloadRegister, TokenResponse, UserInterface } from '../interfaces/userInterface';
+import { TokenPayloadLogin, TokenPayloadRegister, TokenResponse, UserInterface } from '../interfaces/UserInterface';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private baseURL = 'http://localhost:4000/api/user/';
+  private baseURL = 'https://51.75.253.158:4000/api/user/';
   private token: string;
 
   constructor(private http: HttpClient, private router: Router, private sanitizer: DomSanitizer) { }

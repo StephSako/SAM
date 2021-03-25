@@ -3,7 +3,7 @@ import { Capacitor, Plugins, GeolocationPosition } from '@capacitor/core';
 import { Observable, of, from as fromPromise } from 'rxjs';
 import { tap, map, switchMap } from 'rxjs/operators';
 import { LoadingController, AlertController } from '@ionic/angular';
-import { UserInterface } from '../interfaces/userInterface';
+import { UserInterface } from '../interfaces/UserInterface';
 import { AuthService } from '../services/auth.service';
 import { Appearance } from '@angular-material-extensions/google-maps-autocomplete';
 import { DriverData } from '../tab1/driver-data.model';

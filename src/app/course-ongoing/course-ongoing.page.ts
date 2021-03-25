@@ -6,7 +6,7 @@ import { LoadingController, AlertController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DriverData } from '../tab1/driver-data.model';
 import { Socket } from 'ngx-socket-io';
-import { UserInterface } from '../interfaces/userInterface';
+import { UserInterface } from '../interfaces/UserInterface';
 import { AuthService } from '../services/auth.service';
 import { Storage } from '@ionic/storage';
 import { ChangeDetectorRef } from '@angular/core';

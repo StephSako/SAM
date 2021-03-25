@@ -20,7 +20,7 @@ import {ChatPageModule} from './chat/chat.module'
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 
-const config: SocketIoConfig = { url: 'http://localhost:4000', options: {withCredentials: false} };
+const config: SocketIoConfig = { url: 'https://51.75.253.158:4000', options: {withCredentials: false} };
 
 @NgModule({
   declarations: [AppComponent],

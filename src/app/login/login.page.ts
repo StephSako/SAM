@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TokenPayloadLogin } from '../interfaces/userInterface';
+import { TokenPayloadLogin } from '../interfaces/UserInterface';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
-import { UserInterface } from '../interfaces/userInterface';
+import { UserInterface } from '../interfaces/UserInterface';
 
 
 @Component({

@@ -5,7 +5,7 @@ import { tap, map, switchMap } from 'rxjs/operators';
 import { LoadingController, AlertController, ModalController } from '@ionic/angular';
 import { Socket } from 'ngx-socket-io';
 import { AuthService } from '../services/auth.service';
-import { UserInterface } from '../interfaces/userInterface';
+import { UserInterface } from '../interfaces/UserInterface';
 import { LatLng } from '@ionic-native/google-maps';
 import { ChatPage } from '../chat/chat.page';
 

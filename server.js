@@ -1,9 +1,12 @@
-const app = require('express')()
+const express = require('express')
+const app = express();
 const http = require('http').createServer(app);
+const fs = require('fs')
+const https = require('https')
 options={
   cors:true,
  }
-const io = require('socket.io')(http, options);
+const io = require('socket.io')(https, options);
 const notif = require('./src/backend/notif')(io)
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
@@ -15,6 +18,8 @@ const Ride = require("./src/backend/model/Ride")
 const Rating = require("./src/backend/model/Rating")
 
 process.env.SECRET_KEY = 'secret'
+const path = require('path')
+
 
 app.use(session({
     secret: 'riding_center',
@@ -27,16 +32,16 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 var corsParam = {
-    origin: "http://localhost:4000"
+    origin: "https://localhost:4000"
 };
 
 const allowedOrigins = [
-    'capacitor://localhost',
-    'ionic://localhost',
-    'http://localhost',
-    'http://localhost:8080',
-    'http://localhost:8100',
-    'http://localhost:4000'
+    'capacitor://51.75.253.158',
+    'ionic://51.75.253.158',
+    'https://51.75.253.158',
+    'https://51.75.253.158:8080',
+    'https://51.75.253.158:8100',
+    'https://51.75.253.158:4000'
   ];
 
   const corsOptions = {
@@ -63,8 +68,6 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Credentials", 'true');
     next();
 })
-
-const path = require('path')
 
 app.get('/api', function (req, res) {
     res.json({ status: 'Working' })
@@ -105,6 +108,17 @@ let RatingRoute = require('./src/backend/routes/rating.route')
 app.use('/api/rating', RatingRoute)
 
 let port = process.env.PORT || 4000
-http.listen(port, function () {
-    console.log('Express server listening on port ' + port)
-})
+https
+  .createServer(
+    {
+      key: fs.readFileSync('/etc/letsencrypt/live/samwebapp.ddns.net/privkey.pem'),
+      cert: fs.readFileSync('/etc/letsencrypt/live/samwebapp.ddns.net/cert.pem'),
+      ca: fs.readFileSync('/etc/letsencrypt/live/samwebapp.ddns.net/chain.pem'),
+    },
+    app
+  )
+  .listen(4000, () => {
+    console.log('Listening...')
+  })
+
+
