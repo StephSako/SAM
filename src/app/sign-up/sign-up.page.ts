@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators, FormBuilder, FormGroup, AbstractControl, FormControl } from '@angular/forms';
-import { TokenPayloadRegister } from '../interfaces/userInterface';
+import { TokenPayloadRegister } from '../interfaces/UserInterface';
 import { AuthService } from '../services/auth.service';
 
 @Component({

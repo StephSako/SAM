@@ -118,7 +118,7 @@ export class DriverMapPage implements OnInit {
     })
 
     socket.fromEvent('courseFinished').subscribe((data:any) => {
-      console.log("Course Finished")
+      
     })
 
 
@@ -312,8 +312,6 @@ export class DriverMapPage implements OnInit {
     });
 
     this.geocoder.geocode({'address': this.destinationAddress}, (results, status) => {
-      console.log(results);
-      console.log(results[0].geometry.location);
       this.endMarker = new google.maps.Marker({
   
         position: {

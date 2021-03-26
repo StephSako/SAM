@@ -1,13 +1,11 @@
 const express = require('express')
 const app = express();
-const http = require('http').createServer(app);
 const fs = require('fs')
 const https = require('https')
 options={
   cors:true,
  }
-const io = require('socket.io')(https, options);
-const notif = require('./src/backend/notif')(io)
+
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const cors = require('cors')
@@ -32,14 +30,18 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 var corsParam = {
-    origin: "https://localhost:4000"
+    origin: "https://samwebapp.ddns.net:4000"
 };
 
 const allowedOrigins = [
-    'capacitor://51.75.253.158',
-    'ionic://51.75.253.158',
-    'https://51.75.253.158',
-    'https://51.75.253.158:8080',
+    'capacitor://samwebapp.ddns.net',
+    'ionic://samwebapp.ddns.net',
+    'https://samwebapp.ddns.net',
+    'https://samwebapp.ddns.net:8080',
+    'https://samwebapp.ddns.net:8100',
+    'https://samwebapp.ddns.net:4000',
+    'https://samwebapp.ddns.net',
+    'http://51.75.253.158:8100',
     'https://51.75.253.158:8100',
     'https://51.75.253.158:4000'
   ];
@@ -108,7 +110,7 @@ let RatingRoute = require('./src/backend/routes/rating.route')
 app.use('/api/rating', RatingRoute)
 
 let port = process.env.PORT || 4000
-https
+let server = https
   .createServer(
     {
       key: fs.readFileSync('/etc/letsencrypt/live/samwebapp.ddns.net/privkey.pem'),
@@ -121,4 +123,6 @@ https
     console.log('Listening...')
   })
 
+const io = require('socket.io')(server, options);
+const notif = require('./src/backend/notif')(io)
 

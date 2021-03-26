@@ -56,6 +56,7 @@ export class ClientHomePage implements OnInit {
       this.lat = this.user.latitude_pos;
       this.lon = this.user.longitude_pos;
       this.markers = [];
+      this.drivers = [];
       socket.fromEvent('driversMap').subscribe(data => {
         console.log("DRIVERS");
         this.drivers = data;
@@ -186,22 +187,18 @@ export class ClientHomePage implements OnInit {
 
   computeClientDistance() {
     return new Promise((resolve, reject) => {
-      console.log("LENGTH");
-      console.log(Object.keys(this.drivers).length);
       for(let key in this.drivers) {
         let driver = this.drivers[key];
         let start = new google.maps.LatLng(driver.latitude_pos, driver.longitude_pos)
         let end = new google.maps.LatLng(this.lat, this.lon)
         if ((driver.latitude_pos) && (driver.longitude_pos)) {
-          console.log(this.lat);
-          console.log(this.lon);
+
           new google.maps.DistanceMatrixService().getDistanceMatrix({
             origins: [start],
             destinations: [end],
             travelMode: google.maps.TravelMode.BICYCLING
           }, (response, status) => {
             if (status == 'OK') {
-              console.log(response);
               this.count++;
               var origins = response.originAddresses;
               var destinations = response.destinationAddresses;
@@ -225,7 +222,6 @@ export class ClientHomePage implements OnInit {
               }
               if (this.count == Object.keys(this.drivers).length) {
                 this.count = 0;
-                console.log("FINISHED");
                 resolve("ok");
               }
             }
@@ -237,7 +233,6 @@ export class ClientHomePage implements OnInit {
   }
 
   placeDriverMarker() {
-    console.log("PLACE")
     for(let key in this.drivers) {
       let driver = this.drivers[key];
       if ((driver.longitude_pos) && (driver.latitude_pos)) {
