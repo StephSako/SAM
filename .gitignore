@@ -13,6 +13,7 @@ Thumbs.db
 UserInterfaceState.xcuserstate
 $RECYCLE.BIN/
 src/backend/db.js
+src/index.html
 db.js
 
 *.log
