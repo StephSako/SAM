@@ -83,7 +83,7 @@ export class DriverMapPage implements OnInit {
 
     this.isOnline = false;
     this.isLoading = true;
-    this.iconBase = "http://192.168.1.17/"
+    this.iconBase = "http://92.170.102.230/"
     socket.emit("isConnected", this.driver);
     this.directionService = new google.maps.DirectionsService();
 

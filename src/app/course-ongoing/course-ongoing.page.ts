@@ -76,7 +76,7 @@ export class CourseOngoingPage implements OnInit {
     this.courseStarted = false;
     this.arrived = false;
     this.searching = true;
-    this.iconBase = "http://192.168.1.17/"
+    this.iconBase = "http://92.170.102.230/"
     this.client = this.authService.getUserDetails();
     this.route.queryParams.subscribe(params => {
       if (this.router.getCurrentNavigation().extras.state) {

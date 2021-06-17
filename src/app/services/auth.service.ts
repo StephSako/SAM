@@ -10,7 +10,7 @@ import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
   providedIn: 'root'
 })
 export class AuthService {
-  private baseURL = 'https://51.75.253.158:4000/api/user/';
+  private baseURL = 'https://samwebapp.ddns.net:4000/api/user/';
   private token: string;
 
   constructor(private http: HttpClient, private router: Router, private sanitizer: DomSanitizer) { }
