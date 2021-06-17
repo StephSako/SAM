@@ -11,11 +11,11 @@ Le SAM met son vélo dans le coffre la voiture et reconduit la personne chez ell
 Note : Le client ne peux pas choisir le chauffeur, la recherche notifie le SAM le plus proche automatiquement.
 
 ### Membre du projet
-Stephen Sakovitch
-Theo Machon
-Florian Pinsard
-Vincent Faury
-Morgan Jully
+- Stephen Sakovitch
+- Theo Machon
+- Florian Pinsard
+- Vincent Faury
+- Morgan Jully
 
 ## Technologies utilisées
 - <b>Carte</b> : API Google maps
