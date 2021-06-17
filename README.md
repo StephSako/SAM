@@ -63,7 +63,7 @@ Cela aura pour effet de faire apparaitre ou non sa position sur la carte du clie
 <img style="float:left;" height="616" width="300" src="https://raw.githubusercontent.com/carage34/SAM/master/images/course_start_client.PNG">
 </div>
 
-## Ecran Chat instantanée Client / Chauffeur
+## Ecran Chat instantané Client / Chauffeur
 <div>
 <img style="float:left;" height="616" width="300" src="https://raw.githubusercontent.com/carage34/SAM/master/images/chat.PNG">
 </div>
