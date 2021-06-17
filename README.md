@@ -10,7 +10,7 @@ Le SAM met son vélo dans le coffre la voiture et reconduit la personne chez ell
 
 Note : Le client ne peux pas choisir le chauffeur, la recherche notifie le SAM le plus proche automatiquement.
 
-### Membre du projet
+### Membres du projet
 - Stephen Sakovitch
 - Theo Machon
 - Florian Pinsard
