@@ -6,7 +6,7 @@
 <p>L'application permet au client de contacter un chauffeur, à l'instar d'Uber, pour le ramener chez lui.
 
 En effet, si une personne en soirée n'est plus en état de conduire sa voiture pour rentrer, elle peut contacter un <b>SAM</b> qui viendra sur place à vélo.
-Le SAM met son vélo dans le coffre de la voiture et reconduit la personne chez elle. Cette application sera déployé dans une ville au départ.</p>
+Le SAM met son vélo dans le coffre de la voiture et reconduit la personne chez elle. Cette application sera déployée dans une ville au départ.</p>
 
 Note : Le client ne peux pas choisir le chauffeur, la recherche notifie le SAM le plus proche automatiquement.
 
